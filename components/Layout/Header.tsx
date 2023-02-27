@@ -5,7 +5,8 @@ import detectExtension from "../../libs/detectExtension";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 
-const chromeExtensionId: string = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID;
+const chromeExtensionId: string =
+  process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID || "";
 const Header = () => {
   const [isExtensionInstalled, setIsExtensionInstalled] = useState(false);
   const [logoDimension, setLogoDimension] = useState([35, 120]);
@@ -40,7 +41,10 @@ const Header = () => {
 
   /* Method that will fix header after a specific scrollable */
   const isSticky = () => {
-    const header = document.querySelector(".header");
+    const header = document.querySelector<HTMLElement>(".header");
+    if (!header) {
+      throw new ReferenceError(".header section not found.");
+    }
     const scrollTop = window.scrollY;
     if (
       (header.classList.contains("sticky") && scrollTop >= 111.25) ||
