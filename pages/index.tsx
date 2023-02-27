@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <Layout>
       <Head>
-        <title>Hikari</title>
+        <title>Sofamon</title>
       </Head>
       <Banner />
       <Partners />
