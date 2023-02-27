@@ -70,7 +70,7 @@ const Header = () => {
           }
           style={{ maxWidth: 1223 }}
         >
-          <Link href="/" passHref>
+          <Link legacyBehavior href="/" passHref>
             <a className="px-3">
               <Logo height={logoDimension[0]} width={logoDimension[1]} />
             </a>
