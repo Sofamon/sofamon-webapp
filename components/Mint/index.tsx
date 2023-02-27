@@ -25,10 +25,14 @@ const SwipeableNFT = ({
   currentCharacterId,
   setCurrentCharacterId,
   isExtensionInstalled,
+}: {
+  currentCharacterId: number;
+  setCurrentCharacterId: any;
+  isExtensionInstalled: boolean;
 }) => {
   const [isAlreadyMinted, setIsAlreadyMinted] = useState(false);
-  const [txError, setTxError] = useState(undefined);
-  const [mintError, setMintError] = useState(undefined);
+  const [txError, setTxError] = useState<any | null>(undefined);
+  const [mintError, setMintError] = useState<any | null>(undefined);
 
   const { address } = useAccount();
   const tokenId: BigNumber = BigNumber.from(currentCharacterId.toString());
@@ -40,7 +44,7 @@ const SwipeableNFT = ({
         method: "GET",
         headers: {
           accept: "application/json",
-          "X-API-Key": process.env.CENTER_API_KEY,
+          "X-API-Key": process.env.CENTER_API_KEY || "test",
         },
       };
       const response = await fetch(
@@ -116,7 +120,7 @@ const SwipeableNFT = ({
             onClick={() => {
               window.history.replaceState(
                 null,
-                null,
+                "",
                 `?id=${
                   currentCharacterId - 1 == 0
                     ? characters.length
@@ -209,7 +213,7 @@ const SwipeableNFT = ({
             onClick={() => {
               window.history.replaceState(
                 null,
-                null,
+                "",
                 `?id=${(currentCharacterId % characters.length) + 1}`
               );
               setTxError(undefined);
@@ -303,8 +307,8 @@ const Mint = () => {
   }, []);
 
   useEffect(() => {
-    if (isNaN(parseInt(id?.toString()))) setCurrentCharacterId(0);
-    else setCurrentCharacterId(parseInt(id?.toString()));
+    if (isNaN(parseInt(id!.toString()))) setCurrentCharacterId(0);
+    else setCurrentCharacterId(parseInt(id!.toString()));
   }, [id]);
 
   if (!isConnected) window.location.assign("/");

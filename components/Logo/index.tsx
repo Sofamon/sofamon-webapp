@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-const Logo = ({ height, width }) => {
+const Logo = ({ height, width }: { height: number; width: number }) => {
   return (
     <>
       <Image

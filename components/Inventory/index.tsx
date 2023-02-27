@@ -37,7 +37,7 @@ const Inventory = () => {
         method: 'GET',
         headers: {
           accept: 'application/json',
-          'X-API-Key': process.env.CENTER_API_KEY,
+          'X-API-Key': process.env.CENTER_API_KEY || "test",
         },
       }
       const response = await fetch(

@@ -5,6 +5,7 @@ import { configureChains, createClient, WagmiConfig } from 'wagmi'
 import { goerli } from '@wagmi/core'
 import { publicProvider } from 'wagmi/providers/public'
 import { ChakraProvider } from '@chakra-ui/react'
+import type { AppProps } from 'next/app'
 import '../styles/globals.css'
 
 const { chains, provider, webSocketProvider } = configureChains(
@@ -28,7 +29,7 @@ const wagmiClient = createClient({
   webSocketProvider,
 })
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps } : AppProps) {
   const [firstRender, setFirstRender] = React.useState(false)
 
   useEffect(() => {
