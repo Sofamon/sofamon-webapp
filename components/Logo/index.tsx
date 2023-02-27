@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import Image from "next/image";
 
 const Logo = ({ height, width }) => {
   return (
@@ -6,12 +6,12 @@ const Logo = ({ height, width }) => {
       <Image
         width={width}
         height={height}
-        src='/nerko-light.svg'
-        alt='Nerko'
-        loading='lazy'
+        src="/nerko-light.svg"
+        alt="Nerko"
+        loading="lazy"
       />
     </>
-  )
-}
+  );
+};
 
-export default Logo
+export default Logo;
