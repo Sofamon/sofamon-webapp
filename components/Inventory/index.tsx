@@ -5,7 +5,7 @@ import { useAccount } from "wagmi";
 import Link from "next/link";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 
-const chromeExtensionId = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID;
+const chromeExtensionId = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID as string;
 const characters = [
   {
     id: "naruto",
@@ -38,7 +38,7 @@ const Inventory = () => {
         method: "GET",
         headers: {
           accept: "application/json",
-          "X-API-Key": process.env.CENTER_API_KEY || "test",
+          "X-API-Key": process.env.CENTER_API_KEY as string,
         },
       };
       const response = await fetch(

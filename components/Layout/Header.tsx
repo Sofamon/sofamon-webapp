@@ -5,7 +5,7 @@ import detectExtension from "../../libs/detectExtension";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 
-const chromeExtensionId: string = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID || "";
+const chromeExtensionId = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID as string;
 const Header = () => {
   const [isExtensionInstalled, setIsExtensionInstalled] = useState(false);
   const [logoDimension, setLogoDimension] = useState([60, 220]);

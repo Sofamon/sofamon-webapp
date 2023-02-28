@@ -28,12 +28,12 @@ const SwipeableNFT = ({
   isExtensionInstalled,
 }: {
   currentCharacterId: number;
-  setCurrentCharacterId: any;
+  setCurrentCharacterId: Function;
   isExtensionInstalled: boolean;
 }) => {
   const [isAlreadyMinted, setIsAlreadyMinted] = useState(false);
-  const [txError, setTxError] = useState<any | null>(undefined);
-  const [mintError, setMintError] = useState<any | null>(undefined);
+  const [txError, setTxError] = useState<Error | null>(null);
+  const [mintError, setMintError] = useState<Error | null>(null);
 
   const { address } = useAccount();
   const tokenId: BigNumber = BigNumber.from(currentCharacterId.toString());
@@ -45,7 +45,7 @@ const SwipeableNFT = ({
         method: "GET",
         headers: {
           accept: "application/json",
-          "X-API-Key": process.env.CENTER_API_KEY || "test",
+          "X-API-Key": process.env.CENTER_API_KEY as string,
         },
       };
       const response = await fetch(
@@ -123,15 +123,15 @@ const SwipeableNFT = ({
               onClick={() => {
                 window.history.replaceState(
                   null,
-                  null,
+                  "",
                   `?id=${
                     currentCharacterId - 1 == 0
                       ? characters.length
                       : currentCharacterId - 1
                   }`
                 );
-                setTxError(undefined);
-                setMintError(undefined);
+                setTxError(null);
+                setMintError(null);
                 setCurrentCharacterId(
                   currentCharacterId - 1 == 0
                     ? characters.length
@@ -218,11 +218,11 @@ const SwipeableNFT = ({
               onClick={() => {
                 window.history.replaceState(
                   null,
-                  null,
+                  "",
                   `?id=${(currentCharacterId % characters.length) + 1}`
                 );
-                setTxError(undefined);
-                setMintError(undefined);
+                setTxError(null);
+                setMintError(null);
                 setCurrentCharacterId(
                   (currentCharacterId % characters.length) + 1
                 );
@@ -313,8 +313,10 @@ const Mint = () => {
   }, []);
 
   useEffect(() => {
-    if (isNaN(parseInt(id!.toString()))) setCurrentCharacterId(0);
-    else setCurrentCharacterId(parseInt(id!.toString()));
+    if (id?.toString()) {
+      if (isNaN(parseInt(id?.toString()))) setCurrentCharacterId(0);
+      else setCurrentCharacterId(parseInt(id?.toString()));
+    }
   }, [id]);
 
   if (!isConnected) window.location.assign("/");

@@ -6,12 +6,13 @@ import Layout from "../components/Layout";
 export default function Home() {
   return (
     <Layout>
-      <Head>
-        <title>Sofamon</title>
-      </Head>
-      <Banner />
-      <Partners />
+      <>
+        <Head>
+          <title>Sofamon</title>
+        </Head>
+        <Banner />
+        <Partners />
+      </>
     </Layout>
   );
 }
-

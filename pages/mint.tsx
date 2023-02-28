@@ -5,10 +5,12 @@ import MintComponent from '../components/Mint'
 export default function Mint() {
   return (
     <Layout>
-      <Head>
-        <title>Sofamon</title>
-      </Head>
-      <MintComponent />
+      <>
+        <Head>
+          <title>Sofamon</title>
+        </Head>
+        <MintComponent />
+      </>
     </Layout>
   )
 }
