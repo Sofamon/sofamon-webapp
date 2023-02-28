@@ -101,134 +101,137 @@ const SwipeableNFT = ({
     <div className="flex items-center justify-center pt-16 max-w-5xl mx-auto">
       <div
         className={
-          "flex flex-wrap w-full px-8 items-center " +
+          "flex flex-wrap md:flex-nowrap lg:flex-nowrap xl:flex-nowrap items-center " +
           (currentCharacterId === 0 && "hidden")
         }
       >
-        <div
-          className={
-            "mr-3 bg-gray-100 rounded-3xl px-2 h-6 outline-none " +
-            (isMintStarted && "hidden")
-          }
-        >
-          <button
-            className="text-2xl text-gray-400 outline-none relative"
-            style={{
-              top: -5,
-              left: -1,
-            }}
-            onClick={() => {
-              window.history.replaceState(
-                null,
-                "",
-                `?id=${
+        <div className="flex flex-nowrap w-min px-0 md:px-8 lg:px-8 xl:px-8 items-center ">
+          <div
+            className={
+              "mr-3 flex-nowrap bg-gray-100 rounded-3xl px-2 h-6 outline-none " +
+              (isMintStarted && "hidden")
+            }
+          >
+            <button
+              className="text-2xl text-gray-400 outline-none relative"
+              style={{
+                top: -5,
+                left: -1,
+              }}
+              onClick={() => {
+                window.history.replaceState(
+                  null,
+                  null,
+                  `?id=${
+                    currentCharacterId - 1 == 0
+                      ? characters.length
+                      : currentCharacterId - 1
+                  }`
+                );
+                setTxError(undefined);
+                setMintError(undefined);
+                setCurrentCharacterId(
                   currentCharacterId - 1 == 0
                     ? characters.length
                     : currentCharacterId - 1
-                }`
-              );
-              setTxError(undefined);
-              setMintError(undefined);
-              setCurrentCharacterId(
-                currentCharacterId - 1 == 0
-                  ? characters.length
-                  : currentCharacterId - 1
-              );
-              setIsAlreadyMinted(false);
-            }}
-          >
-            🢐
-          </button>
-        </div>
-        <div style={{ flex: "0 0 auto" }}>
-          <FlipCard>
-            <FrontCard isCardFlipped={isMinted}>
-              <Image
-                src={`/${characters[currentCharacterId - 1]}.png`}
-                width="500"
-                height="500"
-                alt="Hikari NFT"
-              />
-            </FrontCard>
-            <BackCard isCardFlipped={isMinted}>
-              <div className="p-6">
+                );
+                setIsAlreadyMinted(false);
+              }}
+            >
+              🢐
+            </button>
+          </div>
+          <div style={{ flex: "0 0 auto" }}>
+            <FlipCard>
+              <FrontCard isCardFlipped={isMinted}>
                 <Image
                   src={`/${characters[currentCharacterId - 1]}.png`}
-                  width="80"
-                  height="80"
+                  width="500"
+                  height="500"
                   alt="Hikari NFT"
-                  className="rounded-lg"
                 />
-                <h2
-                  className="text-lg mt-6 text-white font-semibold mb-3"
-                  style={{ marginBottom: 6 }}
-                >
-                  NFT Minted!
-                </h2>
-                <p className="my-3">
-                  Your NFT will show up in your wallet in the next few minutes.
-                </p>
-                <div
-                  className="mt-3 flex"
-                  style={{ marginBottom: 2, fontSize: 15 }}
-                >
-                  View on&nbsp;
-                  <div className="text-inherit underline hover:text-inherit">
-                    <Link
-                      target="_blank"
-                      href={`https://goerli.etherscan.io/tx/${mintData?.hash}`}
-                    >
-                      Etherscan
-                    </Link>
+              </FrontCard>
+              <BackCard isCardFlipped={isMinted}>
+                <div className="p-6">
+                  <Image
+                    src={`/${characters[currentCharacterId - 1]}.png`}
+                    width="80"
+                    height="80"
+                    alt="Hikari NFT"
+                    className="rounded-lg"
+                  />
+                  <h2
+                    className="text-lg mt-6 text-white font-semibold mb-3"
+                    style={{ marginBottom: 6 }}
+                  >
+                    NFT Minted!
+                  </h2>
+                  <p className="my-3">
+                    Your NFT will show up in your wallet in the next few
+                    minutes.
+                  </p>
+                  <div
+                    className="mt-3 flex"
+                    style={{ marginBottom: 2, fontSize: 15 }}
+                  >
+                    View on&nbsp;
+                    <div className="text-inherit underline hover:text-inherit">
+                      <Link
+                        target="_blank"
+                        href={`https://goerli.etherscan.io/tx/${mintData?.hash}`}
+                      >
+                        Etherscan
+                      </Link>
+                    </div>
+                  </div>
+                  <div className="flex" style={{ marginTop: 2, fontSize: 15 }}>
+                    View on&nbsp;
+                    <div className="text-inherit underline hover:text-inherit">
+                      <Link
+                        className="text-inherit underline hover:text-inherit"
+                        target="_blank"
+                        href={`https://testnets.opensea.io/assets/goerli/${txData?.to}/${currentCharacterId}`}
+                      >
+                        Opensea
+                      </Link>
+                    </div>
                   </div>
                 </div>
-                <div className="flex" style={{ marginTop: 2, fontSize: 15 }}>
-                  View on&nbsp;
-                  <div className="text-inherit underline hover:text-inherit">
-                    <Link
-                      className="text-inherit underline hover:text-inherit"
-                      target="_blank"
-                      href={`https://testnets.opensea.io/assets/goerli/${txData?.to}/${currentCharacterId}`}
-                    >
-                      Opensea
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </BackCard>
-          </FlipCard>
-        </div>
-        <div
-          className={
-            "ml-3 bg-gray-100 rounded-3xl px-2 h-6 outline-none " +
-            (isMintStarted && "hidden")
-          }
-        >
-          <button
-            className="text-2xl text-gray-400 outline-none relative"
-            style={{
-              top: -5,
-              left: 1,
-            }}
-            onClick={() => {
-              window.history.replaceState(
-                null,
-                "",
-                `?id=${(currentCharacterId % characters.length) + 1}`
-              );
-              setTxError(undefined);
-              setMintError(undefined);
-              setCurrentCharacterId(
-                (currentCharacterId % characters.length) + 1
-              );
-              setIsAlreadyMinted(false);
-            }}
+              </BackCard>
+            </FlipCard>
+          </div>
+          <div
+            className={
+              "ml-3 bg-gray-100 rounded-3xl px-2 h-6 outline-none " +
+              (isMintStarted && "hidden")
+            }
           >
-            🢒
-          </button>
+            <button
+              className="text-2xl text-gray-400 outline-none relative"
+              style={{
+                top: -5,
+                left: 1,
+              }}
+              onClick={() => {
+                window.history.replaceState(
+                  null,
+                  null,
+                  `?id=${(currentCharacterId % characters.length) + 1}`
+                );
+                setTxError(undefined);
+                setMintError(undefined);
+                setCurrentCharacterId(
+                  (currentCharacterId % characters.length) + 1
+                );
+                setIsAlreadyMinted(false);
+              }}
+            >
+              🢒
+            </button>
+          </div>
         </div>
-        <div className="flex-auto pl-20">
-          <div style={{ padding: "24px 24px 24px", width: 488 }}>
+        <div className="flex-auto pl-0 md:pl-20 lg:pl-20 xl:pl-20">
+          <div className="w-488" style={{ padding: "24px 24px 24px" }}>
             <h1
               className="text-2xl pb-6 capitalize font-extrabold"
               style={{

@@ -74,14 +74,8 @@ const Inventory = () => {
   }
 
   return (
-    <div
-      className='flex'
-      style={{
-        paddingTop: '12vh',
-        paddingLeft: '19.5vw',
-      }}
-    >
-      <div style={{ width: 400 }}>
+    <div className='flex inventory flex-col md:flex-row lg:flex-row xl:flex-row'>
+      <div>
         <div className='flex items-center'>
           <div className='mr-3 bg-gray-100 rounded-3xl px-2 h-6 outline-none'>
             <button
@@ -177,7 +171,7 @@ const Inventory = () => {
           )}
         </div>
       </div>
-      <div>
+      <div className='hidden md:block lg:block xl:block'>
         <div className='pl-28 h-min grid relative -top-6 grid-cols-3 gap-16'>
           {[...Array(6)].map((_e, i) => (
             <div
@@ -206,6 +200,33 @@ const Inventory = () => {
             Level up
           </button>
         </div>
+      </div>
+      <div className='h-min grid md:hidden lg:hidden xl:hidden grid-cols-1 pt-14 pb-4 gap-10'>
+        {[...Array(6)].map((_e, i) => (
+          <center key={i}>
+            <div className='h-40 w-40 bg-zinc-300 flex items-center justify-center rounded-xl text-6xl'>
+              ?
+            </div>
+          </center>
+        ))}
+      </div>
+      <div className='flex md:hidden lg:hidden xl:hidden mt-12 px-4 mb-2'>
+        <div className='bg-gray-300 rounded-xl mt-2 mr-7 w-28 h-4'>
+          <div className='bg-black rounded-xl w-8 h-4'></div>
+        </div>
+        <div className='mr-7'>
+          <span>Lv0</span>
+          <br />
+          <span>08/20XP</span>
+        </div>
+        <button
+          style={{
+            borderWidth: '0.16rem',
+          }}
+          className='hover:bg-purple-600 hover:border-purple-600 hover:text-white disabled:text-gray-500 disabled:cursor-not-allowed disabled:border-gray-300 disabled:hover:bg-purple-600 disabled:hover:border-purple-600 disabled:hover:text-white outline-none font-bold text-lg px-6 py-2 rounded-3xl whitespace-nowrap'
+        >
+          Level up
+        </button>
       </div>
     </div>
   )

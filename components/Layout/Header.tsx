@@ -5,8 +5,7 @@ import detectExtension from "../../libs/detectExtension";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 
-const chromeExtensionId: string =
-  process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID || "";
+const chromeExtensionId: string = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID || "";
 const Header = () => {
   const [isExtensionInstalled, setIsExtensionInstalled] = useState(false);
   const [logoDimension, setLogoDimension] = useState([35, 120]);
@@ -71,11 +70,52 @@ const Header = () => {
           style={{ maxWidth: 1223 }}
         >
           <Link legacyBehavior href="/" passHref>
-            <a className="px-3">
+            <a className="px-3 pl-5 md:pl-3 lg:pl-3 xl:pl-3">
               <Logo height={logoDimension[0]} width={logoDimension[1]} />
             </a>
           </Link>
-          <div className="flex gap-10 font-bold text-xl items-center">
+          <div className="flex gap-4 font-bold md:hidden lg:hidden xl:hidden mr-4">
+            {isConnected ? (
+              !isExtensionInstalled ? (
+                <>
+                  <Link
+                    href="https://chrome.google.com/webstore/category/extensions"
+                    className="hover:opacity-70"
+                    target="_blank"
+                  >
+                    <span className="hover:opacity-70 cursor-pointer">
+                      Install
+                    </span>
+                  </Link>
+
+                  <Link href="/inventory">
+                    <span className="hover:opacity-70 cursor-pointer">
+                      Inventory
+                    </span>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link href="/mint?id=1">
+                    <span className="hover:opacity-70 cursor-pointer">
+                      Mint
+                    </span>
+                  </Link>
+
+                  <Link href="/inventory">
+                    <span className="hover:opacity-70 cursor-pointer">
+                      Inventory
+                    </span>
+                  </Link>
+                </>
+              )
+            ) : (
+              <div className="connect-button h-min ml-2">
+                <ConnectButton />
+              </div>
+            )}
+          </div>
+          <div className="hidden md:flex lg:flex xl:flex gap-10 font-bold text-xl items-center">
             {!isExtensionInstalled ? (
               <Link
                 href="https://chrome.google.com/webstore/category/extensions"

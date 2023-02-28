@@ -1,12 +1,15 @@
 const Partners = () => {
   return (
-    <div className='flex flex-col items-center gap-8'>
+    <div className='flex flex-col items-center gap-8 mb-14'>
       <header>
         <span className='uppercase font-semibold text-gray-500 text-sm tracking-widest'>
           Our amazing partners
         </span>
       </header>
-      <div className='flex justify-between' style={{ width: 1020 }}>
+      <div
+        className='flex justify-center md:justify-between lg:justify-between xl:justify-between max-w-fit flex-wrap mx-4 md:mx-0 lg:mx-0 xl:mx-0 gap-6 md:gap-0 lg:gap-0 xl:gap-0 md:max-w-none lg:max-w-none xl:max-w-none'
+        style={{ width: 1020 }}
+      >
         <svg
           className='brightness-0'
           width='147'
