@@ -8,7 +8,7 @@ import { useAccount } from "wagmi";
 const chromeExtensionId: string = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID || "";
 const Header = () => {
   const [isExtensionInstalled, setIsExtensionInstalled] = useState(false);
-  const [logoDimension, setLogoDimension] = useState([35, 120]);
+  const [logoDimension, setLogoDimension] = useState([60, 220]);
   const { address, isConnected } = useAccount();
 
   useEffect(() => {
@@ -49,11 +49,11 @@ const Header = () => {
       (header.classList.contains("sticky") && scrollTop >= 111.25) ||
       (!header.classList.contains("sticky") && scrollTop >= 130)
     ) {
-      setLogoDimension([27, 90]);
+      setLogoDimension([40, 160]);
       header.classList.add("bg-white");
       header.classList.add("sticky");
     } else {
-      setLogoDimension([35, 120]);
+      setLogoDimension([60, 220]);
       header.classList.remove("bg-white");
       header.classList.remove("sticky");
     }

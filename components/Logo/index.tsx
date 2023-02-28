@@ -6,7 +6,7 @@ const Logo = ({ height, width }: { height: number; width: number }) => {
       <Image
         width={width}
         height={height}
-        src="/nerko-light.svg"
+        src="/sofamon.svg"
         alt="Nerko"
         loading="lazy"
       />
