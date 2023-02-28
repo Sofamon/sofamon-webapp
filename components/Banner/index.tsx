@@ -20,11 +20,9 @@ const Banner = () => {
         style={{ height: 582, width: 1200 }}
       >
         <div style={{ width: 453 }} className="my-auto">
-          <h2 className="mb-6 text-7xl font-bold">
-            Start your on-chain Adventure
-          </h2>
+          <h2 className="mb-6 text-7xl font-bold">Sofamon Browser Extension</h2>
           <p className="text-gray-500 text-2xl m-0">
-            Get your first on-chain NFT pet.
+            Play with Sofamon while interacting with blockchain.
           </p>
           <div
             style={{
@@ -47,7 +45,7 @@ const Banner = () => {
                 <span>
                   {!isExtensionInstalled
                     ? "Install Extension for Free Mint"
-                    : "Mint a NFT"}
+                    : "Mint Free NFT"}
                 </span>
                 ➜
               </div>

@@ -150,7 +150,7 @@ const SwipeableNFT = ({
                   src={`/${characters[currentCharacterId - 1]}.png`}
                   width="500"
                   height="500"
-                  alt="Hikari NFT"
+                  alt="Sofamon NFT"
                 />
               </FrontCard>
               <BackCard isCardFlipped={isMinted}>
@@ -159,7 +159,7 @@ const SwipeableNFT = ({
                     src={`/${characters[currentCharacterId - 1]}.png`}
                     width="80"
                     height="80"
-                    alt="Hikari NFT"
+                    alt="Sofamon NFT"
                     className="rounded-lg"
                   />
                   <h2
