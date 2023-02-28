@@ -7,6 +7,9 @@ import { useAccount } from "wagmi";
 import Image from "next/image";
 import { Button, Flex } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
+import { Web3Auth } from "@web3auth/modal";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { Web3Button, Web3NetworkSwitch } from '@web3modal/react'
 
 const chromeExtensionId = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID as string;
 const Header = () => {
@@ -14,6 +17,66 @@ const Header = () => {
   const [isMobileMenuActive, setIsMobileMenuActive] = useState(false);
   const [logoDimension, setLogoDimension] = useState([60, 220]);
   const { address, isConnected } = useAccount();
+  const [web3auth, setWeb3auth] = useState<Web3Auth>();
+  const [user, setUser] = useState<any>();
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const web3auth = new Web3Auth({
+          clientId:
+            "BBdkTX2TIsbvUT32R6xivJL_fkk6Fnaepto2R2jjpex0UKZFGhruEw9AAxcuC5u4FU1y0YSUODil2PVwBqLQwek",
+          chainConfig: {
+            chainNamespace: CHAIN_NAMESPACES.EIP155,
+            chainId: "0x5",
+          },
+        });
+
+        setWeb3auth(web3auth);
+        await web3auth.initModal();
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    init();
+  }, []);
+
+  const login = async () => {
+    try {
+      if (!web3auth) {
+        console.log("web3auth not initialized yet");
+        return;
+      }
+      const web3authProvider = await web3auth.connect();
+      const user = await web3auth.getUserInfo();
+      setUser(user);
+      console.log(user);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const logout = async () => {
+    try {
+      if (!web3auth) {
+        console.log("web3auth not initialized yet");
+        return;
+      }
+      const web3authProvider = await web3auth.logout();
+      setUser(null);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getUserInfo = async () => {
+    if (!web3auth) {
+      console.log("web3auth not initialized yet");
+      return;
+    }
+    const user = await web3auth.getUserInfo();
+    console.log(user);
+  };
 
   useEffect(() => {
     if (isConnected)
@@ -82,7 +145,7 @@ const Header = () => {
           <div className="flex gap-4 font-bold md:hidden lg:hidden xl:hidden mr-4">
             {isConnected ? (
               <>
-                <ConnectButton.Custom>
+                {/* <ConnectButton.Custom>
                   {({ openAccountModal }) => {
                     return (
                       <Image
@@ -94,11 +157,11 @@ const Header = () => {
                       />
                     );
                   }}
-                </ConnectButton.Custom>
+                </ConnectButton.Custom> */}
               </>
             ) : (
               <div className="connect-button h-min ml-2 whitespace-nowrap">
-                <ConnectButton />
+                {/* <ConnectButton /> */}
               </div>
             )}
             <Image
@@ -202,7 +265,26 @@ const Header = () => {
               <> </>
             )}
             <div className="connect-button h-min ml-2">
-              <ConnectButton />
+              {/* <ConnectButton /> */}
+              {user ? (
+                <Button
+                  style={{ backgroundColor: "red", color: "white", width: 200 }}
+                  onClick={logout}
+                >
+                  Disconnect Wallet
+                </Button>
+              ) : (
+                <Button
+                  style={{
+                    backgroundColor: "blue",
+                    color: "white",
+                    width: 200,
+                  }}
+                  onClick={login}
+                >
+                  Connect Wallet
+                </Button>
+              )}
             </div>
           </div>
         </header>
