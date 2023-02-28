@@ -3,7 +3,7 @@ const detectExtension = (): Promise<boolean> => {
     let img = new Image();
     const chromeExtensionId = process.env
       .NEXT_PUBLIC_CHROME_EXTENSION_ID as string;
-    img.src = `chrome-extension://${chromeExtensionId}/images/naruto-icon.png`;
+    img.src = `chrome-extension://${chromeExtensionId}/images/icon16.png`;
     img.onload = function () {
       resolve(true);
     };
