@@ -13,6 +13,7 @@ import FlipCard, { BackCard, FrontCard } from "../Flipcard";
 import { BigNumber } from "ethers";
 import detectExtension from "../../libs/detectExtension";
 import { useRouter } from "next/router";
+import { TriangleUpIcon, TriangleDownIcon } from "@chakra-ui/icons";
 
 const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 const contractConfig = {
@@ -98,7 +99,7 @@ const SwipeableNFT = ({
   const isMinted = txSuccess;
 
   return (
-    <div className="flex items-center justify-center pt-16 max-w-5xl mx-auto">
+    <div className="flex items-center justify-center pt-32 max-w-5xl mx-auto">
       <div
         className={
           "flex flex-wrap md:flex-nowrap lg:flex-nowrap xl:flex-nowrap items-center " +
@@ -113,10 +114,11 @@ const SwipeableNFT = ({
             }
           >
             <button
-              className="text-2xl text-gray-400 outline-none relative"
+              className="text-2xl text-gray-400 outline-none relative rotate-90"
               style={{
-                top: -5,
-                left: -1,
+                width: 9,
+                top: -6,
+                left: 2,
               }}
               onClick={() => {
                 window.history.replaceState(
@@ -138,7 +140,7 @@ const SwipeableNFT = ({
                 setIsAlreadyMinted(false);
               }}
             >
-              🢐
+              <TriangleDownIcon boxSize={3} />
             </button>
           </div>
           <div style={{ flex: "0 0 auto" }}>
@@ -207,10 +209,11 @@ const SwipeableNFT = ({
             }
           >
             <button
-              className="text-2xl text-gray-400 outline-none relative"
+              className="text-2xl text-gray-400 outline-none relative rotate-90"
               style={{
-                top: -5,
-                left: 1,
+                width: 9,
+                top: -6,
+                left: 4,
               }}
               onClick={() => {
                 window.history.replaceState(
@@ -226,7 +229,7 @@ const SwipeableNFT = ({
                 setIsAlreadyMinted(false);
               }}
             >
-              🢒
+              <TriangleUpIcon boxSize={3} />
             </button>
           </div>
         </div>

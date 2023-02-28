@@ -61,7 +61,7 @@ const Header = () => {
 
   return (
     <>
-      <center className="header z-50 top-0 transition-all ease-out duration-200">
+      <center className="header z-50 top-0 transition-all ease-out duration-75">
         <header
           className={
             "flex items-center justify-between " +

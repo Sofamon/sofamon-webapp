@@ -3,6 +3,7 @@ import detectExtension from "../../libs/detectExtension";
 import Image from "next/image";
 import Link from "next/link";
 import { MobileBanner } from "./MobileBanner";
+import { ArrowUpIcon } from "@chakra-ui/icons";
 
 const Banner = () => {
   const [isExtensionInstalled, setIsExtensionInstalled] = useState(false);
@@ -15,7 +16,7 @@ const Banner = () => {
   return (
     <>
       <div
-        className="mx-auto hidden md:flex lg:flex xl:flex"
+        className="mx-auto mt-10 mb-14 hidden md:flex lg:flex xl:flex"
         style={{ height: 582, width: 1200 }}
       >
         <div style={{ width: 453 }} className="my-auto">
@@ -33,7 +34,7 @@ const Banner = () => {
               backgroundImage: "linear-gradient(25deg, #2600fc, #ff00ea)",
             }}
             className="
-          mt-10 text-white border-none outline-none font-bold text-lg px-6 pr-8 rounded-3xl w-min whitespace-nowrap cursor-pointer hover:opacity-80 transition-all delay-100"
+          mt-10 text-white border-none outline-none font-bold text-lg px-6 rounded-3xl w-min whitespace-nowrap cursor-pointer hover:opacity-80 transition-all delay-100"
           >
             <Link
               href={
@@ -77,12 +78,12 @@ const Banner = () => {
                   </textPath>
                 </text>
               </svg>
-              <span
-                className="text-3xl font-bold relative left-11"
-                style={{ color: "#e348ff", top: -78 }}
+              <div
+                className="text-3xl font-bold relative rotate-45"
+                style={{ color: "#e348ff", top: -62, left: 26 }}
               >
-                🡭
-              </span>
+                <ArrowUpIcon boxSize={12} />
+              </div>
             </div>
           </Link>
           <div className="relative -left-20" style={{ top: 540 }}>
