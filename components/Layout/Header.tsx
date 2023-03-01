@@ -2,80 +2,154 @@ import Link from "next/link";
 import Logo from "../Logo";
 import { useEffect, useState } from "react";
 import detectExtension from "../../libs/detectExtension";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount } from "wagmi";
+import useAccount from "../../account/useAccount";
 import Image from "next/image";
-import { Button, Flex } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 import { Web3Auth } from "@web3auth/modal";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
-import { Web3Button, Web3NetworkSwitch } from '@web3modal/react'
+import Web3 from "web3";
+import SignClient from "@walletconnect/sign-client";
+import { Web3Modal } from "@web3modal/standalone";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverHeader,
+  PopoverBody,
+  PopoverArrow,
+  PopoverCloseButton,
+  Button,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
+  Flex,
+} from "@chakra-ui/react";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 const chromeExtensionId = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID as string;
 const Header = () => {
   const [isExtensionInstalled, setIsExtensionInstalled] = useState(false);
   const [isMobileMenuActive, setIsMobileMenuActive] = useState(false);
   const [logoDimension, setLogoDimension] = useState([60, 220]);
-  const { address, isConnected } = useAccount();
-  const [web3auth, setWeb3auth] = useState<Web3Auth>();
-  const [user, setUser] = useState<any>();
+  const { address, isConnected, login, logout } = useAccount();
+  const [web3Auth, setWeb3Auth] = useState<Web3Auth>();
+  const web3Modal = new Web3Modal({
+    projectId: process.env.NEXT_PUBLIC_PROJECT_ID as string,
+    walletConnectVersion: 2,
+  });
+  const [signClient, setSignClient] = useState<SignClient | undefined>(
+    undefined
+  );
+  const [session, setSession] = useState<any>();
+
+  const initWeb3Modal = async () => {
+    const client = await SignClient.init({
+      projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
+    });
+    setSignClient(client);
+  };
+
+  const initWeb3Auth = async () => {
+    try {
+      const web3Auth = new Web3Auth({
+        clientId:
+          "BBdkTX2TIsbvUT32R6xivJL_fkk6Fnaepto2R2jjpex0UKZFGhruEw9AAxcuC5u4FU1y0YSUODil2PVwBqLQwek",
+        chainConfig: {
+          chainNamespace: CHAIN_NAMESPACES.EIP155,
+          chainId: "0x5",
+        },
+      });
+      await web3Auth.initModal();
+      setWeb3Auth(web3Auth);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    const init = async () => {
-      try {
-        const web3auth = new Web3Auth({
-          clientId:
-            "BBdkTX2TIsbvUT32R6xivJL_fkk6Fnaepto2R2jjpex0UKZFGhruEw9AAxcuC5u4FU1y0YSUODil2PVwBqLQwek",
-          chainConfig: {
-            chainNamespace: CHAIN_NAMESPACES.EIP155,
-            chainId: "0x5",
-          },
-        });
-
-        setWeb3auth(web3auth);
-        await web3auth.initModal();
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    init();
+    initWeb3Auth();
+    initWeb3Modal();
   }, []);
 
-  const login = async () => {
-    try {
-      if (!web3auth) {
-        console.log("web3auth not initialized yet");
-        return;
+  useEffect(() => {
+    if (web3Auth) {
+      web3Auth
+        .getUserInfo()
+        .then(async () => {
+          const web3 = new Web3(web3Auth.provider as any);
+          const wallets = await web3.eth.getAccounts();
+          login(wallets[0]);
+        })
+        .catch((error) => console.error(error));
+    }
+    // TODO: function to check if user has already signed in with web3modal...
+    if (signClient) {
+      (async () => {
+        console.log(signClient.pairing);
+      })();
+    }
+  }, [signClient, web3Auth]);
+
+  const web3ModalLogin = async () => {
+    if (signClient) {
+      const namespaces = {
+        eip155: {
+          methods: ["eth_sign"],
+          chains: ["eip155:1"],
+          events: ["accountsChanged"],
+        },
+      };
+      const { uri, approval } = await signClient.connect({
+        requiredNamespaces: namespaces,
+      });
+      if (uri) {
+        await web3Modal.openModal({
+          uri,
+          standaloneChains: namespaces.eip155.chains,
+        });
+        const session = await approval();
+        login(session.namespaces.eip155.accounts[0].slice(9));
+        setSession(session);
+        web3Modal.closeModal();
       }
-      const web3authProvider = await web3auth.connect();
-      const user = await web3auth.getUserInfo();
-      setUser(user);
-      console.log(user);
-    } catch (error) {
-      console.log(error);
     }
   };
-  const logout = async () => {
+
+  const web3AuthLogin = async () => {
     try {
-      if (!web3auth) {
-        console.log("web3auth not initialized yet");
+      if (!web3Auth) {
         return;
       }
-      const web3authProvider = await web3auth.logout();
-      setUser(null);
+      const web3AuthProvider = await web3Auth.connect();
+      const web3 = new Web3(web3AuthProvider as any);
+      const wallets = await web3.eth.getAccounts();
+      login(wallets[0]);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const getUserInfo = async () => {
-    if (!web3auth) {
-      console.log("web3auth not initialized yet");
-      return;
+  const walletLogout = async () => {
+    try {
+      if (web3Auth) {
+        const web3AuthProvider = await web3Auth.logout();
+      }
+    } catch (error) {
+      console.log(error);
     }
-    const user = await web3auth.getUserInfo();
-    console.log(user);
+    try {
+      if (signClient) {
+        signClient.disconnect({
+          topic: session.topic as string,
+          reason: { code: 6000, message: "User disconnected" },
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    logout();
   };
 
   useEffect(() => {
@@ -128,6 +202,86 @@ const Header = () => {
     }
   };
 
+  const ConnectButton = () => {
+    return (
+      <>
+        {isConnected ? (
+          <Button
+            style={{ backgroundColor: "red", color: "white", width: 200 }}
+            onClick={walletLogout}
+          >
+            Disconnect Wallet
+          </Button>
+        ) : (
+          <Popover placement="bottom" isLazy>
+            <PopoverTrigger>
+              <Button
+                rightIcon={<ChevronDownIcon />}
+                colorScheme="pink"
+                w="fit-content"
+              >
+                Connect Wallet
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent _focus={{ boxShadown: "none" }}>
+              <PopoverArrow />
+              <PopoverCloseButton />
+              <PopoverHeader fontWeight="bold">Connect Wallet</PopoverHeader>
+              <PopoverBody w="full">
+                <Tabs isLazy colorScheme="green">
+                  <TabList>
+                    <Tab
+                      _focus={{ boxShadow: "none" }}
+                      fontSize="xs"
+                      fontWeight="bold"
+                      w="50%"
+                    >
+                      Connect with Web3Auth
+                    </Tab>
+                    <Tab
+                      _focus={{ boxShadow: "none" }}
+                      fontSize="xs"
+                      fontWeight="bold"
+                      w="50%"
+                    >
+                      Connect with WalletConnect
+                    </Tab>
+                  </TabList>
+                  <TabPanels>
+                    <TabPanel>
+                      <Button
+                        style={{
+                          backgroundColor: "blue",
+                          color: "white",
+                          width: 200,
+                        }}
+                        onClick={web3AuthLogin}
+                      >
+                        Web3Auth
+                      </Button>
+                    </TabPanel>
+                    <TabPanel>
+                      <Button
+                        style={{
+                          backgroundColor: "blue",
+                          color: "white",
+                          width: 200,
+                        }}
+                        onClick={web3ModalLogin}
+                      >
+                        WalletConnect
+                      </Button>
+                    </TabPanel>
+                  </TabPanels>
+                </Tabs>
+              </PopoverBody>
+            </PopoverContent>
+          </Popover>
+        )}
+      </>
+    );
+  };
+
   return (
     <>
       <center className="header z-50 top-0 transition-all ease-out duration-75">
@@ -144,24 +298,10 @@ const Header = () => {
           </Link>
           <div className="flex gap-4 font-bold md:hidden lg:hidden xl:hidden mr-4">
             {isConnected ? (
-              <>
-                {/* <ConnectButton.Custom>
-                  {({ openAccountModal }) => {
-                    return (
-                      <Image
-                        src="/wallet-icon.svg"
-                        alt="wallet"
-                        height={26}
-                        width={26}
-                        onClick={openAccountModal}
-                      />
-                    );
-                  }}
-                </ConnectButton.Custom> */}
-              </>
+              <ConnectButton />
             ) : (
               <div className="connect-button h-min ml-2 whitespace-nowrap">
-                {/* <ConnectButton /> */}
+                <ConnectButton />
               </div>
             )}
             <Image
@@ -261,31 +401,9 @@ const Header = () => {
                   Inventory
                 </span>
               </Link>
-            ) : (
-              <> </>
-            )}
-            <div className="connect-button h-min ml-2">
-              {/* <ConnectButton /> */}
-              {user ? (
-                <Button
-                  style={{ backgroundColor: "red", color: "white", width: 200 }}
-                  onClick={logout}
-                >
-                  Disconnect Wallet
-                </Button>
-              ) : (
-                <Button
-                  style={{
-                    backgroundColor: "blue",
-                    color: "white",
-                    width: 200,
-                  }}
-                  onClick={login}
-                >
-                  Connect Wallet
-                </Button>
-              )}
-            </div>
+            ) : null}
+            <ConnectButton />
+            <div className="connect-button h-min ml-2"></div>
           </div>
         </header>
       </center>

@@ -8,6 +8,10 @@ export default function Home() {
       <>
         <Head>
           <title>Sofamon</title>
+          <script
+            src="https://public.cypherd.io/js/onboardingsdk.js"
+            async
+          ></script>
         </Head>
         <Banner />
       </>

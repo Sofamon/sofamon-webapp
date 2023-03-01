@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import characters from "../../characters";
 import detectExtension from "../../libs/detectExtension";
-import { useAccount } from "wagmi";
+import useAccount from "../../account/useAccount";
 import Link from "next/link";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 
@@ -68,7 +68,7 @@ const Inventory = () => {
             currentCharacterId > 0 ? currentCharacterId - 1 : 0
           ].contract.toLowerCase()
         ) {
-          setIsAlreadyMinted(true);
+          // setIsAlreadyMinted(true);
           break;
         }
       }

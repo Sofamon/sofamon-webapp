@@ -2,18 +2,13 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import characters from "../../characters";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import {
-  useAccount,
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction,
-} from "wagmi";
 import FlipCard, { BackCard, FrontCard } from "../Flipcard";
 import { BigNumber } from "ethers";
 import detectExtension from "../../libs/detectExtension";
 import { useRouter } from "next/router";
 import { TriangleUpIcon, TriangleDownIcon } from "@chakra-ui/icons";
+import useAccount from "../../account/useAccount";
+import { ethers } from "ethers";
 
 const chromeExtensionId = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID as string;
 
@@ -26,13 +21,74 @@ const SwipeableNFT = ({
   setCurrentCharacterId: Function;
   isExtensionInstalled: boolean;
 }) => {
+  const { address } = useAccount();
   const [isAlreadyMinted, setIsAlreadyMinted] = useState(false);
   const [txError, setTxError] = useState<Error | null>(null);
   const [mintError, setMintError] = useState<Error | null>(null);
-
-  const { address } = useAccount();
-
+  const [isMinted, setIsMinted] = useState(false);
+  const [isMintStarted, setIsMintStarted] = useState(false);
+  const [isMintLoading, setIsMintLoading] = useState(false);
+  const [mintData, setMintData] = useState({ hash: "" });
+  const [txData, setTxData] = useState({ to: "" });
+  const tokenId: BigNumber = BigNumber.from(currentCharacterId.toString());
   const amount: BigNumber = BigNumber.from("1");
+  const mintContract = async () => {
+    const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+    const signer = provider.getSigner();
+    const sofamon = new ethers.Contract(
+      contractConfig.address,
+      contractConfig.abi,
+      signer
+    );
+    sofamon.mint(amount).then((result: any) => {
+      setMintData(result);
+      setTxData({ to: contractConfig.address });
+      setIsMintStarted(true);
+      setIsMintLoading(false);
+    });
+    setIsMintLoading(true);
+  };
+
+  useEffect(() => {
+    (window as any).Cypher({
+      address: address,
+      targetChainIdHex: "0x5", // Eth - Goreli
+      requiredTokenBalance: 0,
+      isTestnet: true,
+      callBack: () => {
+        console.log("callBack called");
+      },
+    });
+  }, []);
+
+  var clickedOnce = false;
+
+  document.onclick = function (event) {
+    if (event === undefined) event = window.event as any;
+    var target = "target" in event ? event.target : (event as any).srcElement;
+    if (target.outerText === "Exchange") {
+      if (clickedOnce) {
+        return;
+      }
+      clickedOnce = true;
+      var popupBackground: any = document.getElementById("popupBackground");
+      popupBackground.remove();
+    }
+
+    if (target.id == "popupBackground") {
+      var popupBackground: any = document.getElementById("popupBackground");
+      while (popupBackground) {
+        popupBackground.remove();
+        popupBackground = document.getElementById("popupBackground");
+      }
+    }
+  };
+
+  const contractConfig = {
+    address: characters[currentCharacterId > 0 ? currentCharacterId - 1 : 0]
+      .contract as `0x${string}`,
+    abi: characters[currentCharacterId > 0 ? currentCharacterId - 1 : 0].abi,
+  };
 
   useEffect(() => {
     setIsAlreadyMinted(false);
@@ -60,58 +116,41 @@ const SwipeableNFT = ({
             ? characters[currentCharacterId - 1].contract.toLowerCase()
             : "")
         ) {
-          setIsAlreadyMinted(true);
+          // setIsAlreadyMinted(true);
           break;
         }
       }
     })();
   }, [address, currentCharacterId]);
 
-  const { config: contractWriteConfig } = usePrepareContractWrite({
-    address: characters[currentCharacterId > 0 ? currentCharacterId - 1 : 0]
-      .contract as `0x${string}`,
-    abi: characters[currentCharacterId > 0 ? currentCharacterId - 1 : 0].abi,
-    functionName: "mint",
-    args: [amount],
-  });
-
-  let {
-    data: mintData,
-    write: mint,
-    isLoading: isMintLoading,
-    isSuccess: isMintStarted,
-    error: mintErrorRaw,
-  } = useContractWrite(contractWriteConfig);
-
-  let {
-    data: txData,
-    isSuccess: txSuccess,
-    error: txErrorRaw,
-  } = useWaitForTransaction({
-    hash: mintData?.hash,
-  });
-
+  let updateInterval: any;
   useEffect(() => {
-    setMintError(mintErrorRaw);
-  }, [mintErrorRaw]);
+    const updateTxStatus = async () => {
+      const response = await fetch(
+        `https://api-goerli.etherscan.io/api?module=transaction&action=gettxreceiptstatus&txhash=${mintData.hash}&apikey=6956YW7QNDVXDS9DZJH8ES3RX38IEHTRD4`
+      );
+      const res = await response.json();
+      console.log(res, mintData)
+      if (res.result.status === "1") {
+        setIsMintStarted(false);
+        setIsMinted(true);
+        clearInterval(updateInterval);
+      }
+      if (res.result.status === "0") {
+        setIsMintStarted(false);
+        setIsMinted(false);
+        clearInterval(updateInterval);
+      }
+    };
 
-  useEffect(() => {
-    setTxError(txErrorRaw);
-  }, [txErrorRaw]);
-
-  useEffect(() => {
-    if (txSuccess) onMint();
-  }, [txSuccess]);
-
-  const isMinted = txSuccess;
-
-  const onMint = () => {
-    chrome.runtime.sendMessage(chromeExtensionId, {
-      info: "mintNFT",
-      character:
-        currentCharacterId > 0 ? characters[currentCharacterId - 1].id : "",
-    });
-  };
+    if (mintData.hash && isMintStarted) {
+      updateTxStatus();
+      updateInterval = setInterval(updateTxStatus, 2000);
+    }
+    return () => {
+      clearInterval(updateInterval);
+    };
+  }, [mintData]);
 
   return (
     <div
@@ -265,9 +304,9 @@ const SwipeableNFT = ({
                 ? characters[currentCharacterId - 1].name
                 : ""}
             </h1>
-            <div className="connect-button">
+            {/* <div className="connect-button">
               <ConnectButton />
-            </div>
+            </div> */}
             <p className="mt-3 mb-0 text-red-500">
               {mintError && `Error: ${mintError.message}`}
               {txError && `Error: ${txError.message}`}
@@ -289,8 +328,8 @@ const SwipeableNFT = ({
                   "mt-3 hover:bg-purple-600 hover:border-purple-600 hover:text-white disabled:text-gray-500 disabled:cursor-not-allowed disabled:border-gray-300 disabled:hover:bg-purple-600 disabled:hover:border-purple-600 disabled:hover:text-white outline-none font-bold text-lg px-6 py-2 rounded-3xl " +
                   (!isExtensionInstalled && "hidden")
                 }
-                onClick={() => {
-                  if (!isMintLoading && !isMintStarted) mint?.();
+                onClick={async () => {
+                  if (!isMintLoading && !isMintStarted) await mintContract();
                 }}
                 disabled={isMintLoading || isMintStarted || isAlreadyMinted}
               >
