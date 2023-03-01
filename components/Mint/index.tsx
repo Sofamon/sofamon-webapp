@@ -99,7 +99,10 @@ const SwipeableNFT = ({
   const isMinted = txSuccess;
 
   return (
-    <div className="flex items-center justify-center pt-32 max-w-5xl mx-auto">
+    <div
+      className="flex items-center justify-center max-w-5xl mx-auto"
+      style={{ height: "80vh" }}
+    >
       <div
         className={
           "flex flex-wrap md:flex-nowrap lg:flex-nowrap xl:flex-nowrap items-center " +

@@ -6,6 +6,7 @@ import { goerli } from "@wagmi/core";
 import { publicProvider } from "wagmi/providers/public";
 import { ChakraProvider } from "@chakra-ui/react";
 import type { AppProps } from "next/app";
+import Head from "next/head";
 import "../styles/globals.css";
 
 const { chains, provider, webSocketProvider } = configureChains(
@@ -61,6 +62,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         showRecentTransactions={true}
       >
         <ChakraProvider>
+          <Head>
+            <link rel="icon" type="image/png" href="/favicon.png" />
+          </Head>
           <Component {...pageProps} />
         </ChakraProvider>
       </RainbowKitProvider>
