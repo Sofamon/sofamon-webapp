@@ -83,14 +83,25 @@
 
 .inventory {
   padding-top: 20vh;
-  padding-left: 19.5vw;
+  padding-left: calc(41vw - 400px);
 }
 
 .inventory:first-child {
   width: 400px;
 }
 
+.level-bar {
+  padding-left: 196px;
+}
+
+header {
+  max-width: 1223px;
+}
+
 @media (max-width: 700px) {
+  header {
+    width: unset;
+  }
   .w-488 {
     width: unset;
   }
@@ -104,6 +115,9 @@
 }
 
 @media (min-width: 701px) and (max-width: 1120px) {
+  header {
+    width: 90vw;
+  }
   .w-488 {
     width: unset;
   }
@@ -113,5 +127,8 @@
   }
   .inventory:first-child {
     width: unset;
+  }
+  .level-bar {
+    padding-left: 110px;
   }
 }

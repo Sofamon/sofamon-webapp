@@ -75,9 +75,9 @@ const Inventory = () => {
   };
 
   return (
-    <div className="flex inventory flex-col md:flex-row lg:flex-row xl:flex-row">
+    <div className="flex inventory flex-col md:flex-row lg:flex-row xl:flex-row mx-10">
       <div>
-        <div className="flex items-center">
+        <div className="flex items-center justify-center md:justify-start lg:justify-start xl:justify-start">
           <div className="mr-3 bg-gray-100 rounded-3xl px-2 h-6 outline-none">
             <button
               className="text-2xl text-gray-400 outline-none relative rotate-90"
@@ -175,7 +175,7 @@ const Inventory = () => {
         </div>
       </div>
       <div className="hidden md:block lg:block xl:block">
-        <div className="pl-28 h-min grid relative -top-6 grid-cols-3 gap-16">
+        <div className="pl-28 h-min grid relative -top-6 grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-16">
           {[...Array(6)].map((_e, i) => (
             <div
               key={i}
@@ -185,7 +185,7 @@ const Inventory = () => {
             </div>
           ))}
         </div>
-        <div className="flex mt-12" style={{ paddingLeft: 196 }}>
+        <div className="flex mt-12 level-bar">
           <div className="bg-gray-300 rounded-xl mt-2 mr-7 w-64 h-4">
             <div className="bg-black rounded-xl w-20 h-4"></div>
           </div>

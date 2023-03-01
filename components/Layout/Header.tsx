@@ -73,7 +73,6 @@ const Header = () => {
             "flex items-center justify-between " +
             (logoDimension[0] === 27 ? "py-6" : "py-8")
           }
-          style={{ maxWidth: 1223 }}
         >
           <Link legacyBehavior href="/" passHref>
             <a className="px-3 pl-5 md:pl-3 lg:pl-3 xl:pl-3">
