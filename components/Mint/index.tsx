@@ -45,18 +45,23 @@ const SwipeableNFT = ({
         method: "GET",
         headers: {
           accept: "application/json",
-          "X-API-Key": process.env.CENTER_API_KEY as string,
+          Authorization: `Basic ${Buffer.from(
+            ((process.env.INFURA_API_KEY as string) +
+              ":" +
+              process.env.INFURA_API_KEY_SECRET) as string
+          ).toString("base64")}`,
         },
       };
       const response = await fetch(
-        `https://api.center.dev/v1/ethereum-goerli/account/${address}/assets-owned`,
+        `https://nft.api.infura.io/networks/5/accounts/${address}/assets/nfts`, // NETWORK 5 FOR GOERLI
         options
       );
       const res = await response.json();
       setIsAlreadyMinted(false);
-      for (let item of res.items) {
+      for (let item of res?.assets) {
         if (
-          String(item.address) === contractAddress &&
+          String(item.contract).toLowerCase() ===
+            contractAddress?.toLowerCase() &&
           parseInt(item.tokenId) === currentCharacterId
         ) {
           setIsAlreadyMinted(true);
@@ -153,7 +158,7 @@ const SwipeableNFT = ({
                   src={`/${characters[currentCharacterId - 1]}.png`}
                   width="500"
                   height="500"
-                  alt="Sofamon NFT"
+                  alt="Hikari NFT"
                 />
               </FrontCard>
               <BackCard isCardFlipped={isMinted}>
@@ -162,7 +167,7 @@ const SwipeableNFT = ({
                     src={`/${characters[currentCharacterId - 1]}.png`}
                     width="80"
                     height="80"
-                    alt="Sofamon NFT"
+                    alt="Hikari NFT"
                     className="rounded-lg"
                   />
                   <h2
