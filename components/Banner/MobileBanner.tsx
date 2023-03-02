@@ -75,7 +75,7 @@ export const MobileBanner = () => {
         <div className="relative left-4" style={{ top: -380 }}>
           <Image
             alt="bunny image"
-            src="/nw_q-x88_400x400.png"
+            src="/sofa.png"
             height={350}
             width={350}
           />

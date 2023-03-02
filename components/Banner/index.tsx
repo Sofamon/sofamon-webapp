@@ -52,9 +52,9 @@ const Banner = () => {
             </Link>
           </div>
         </div>
-        <div className="flex items-end justify-center w-full mb-8 flex-col relative -top-14">
+        <div className="flex items-end justify-center w-full mb-24 flex-col relative -top-14">
           <Link href="/mint?id=1">
-            <div className="relative z-10 bg-white rounded-full cursor-pointer circle-border">
+            <div className="relative z-10 mb-20 bg-white rounded-full cursor-pointer circle-border">
               <svg
                 className="spin"
                 viewBox="0 0 100 100"
@@ -84,7 +84,7 @@ const Banner = () => {
               </div>
             </div>
           </Link>
-          <div className="relative -left-20" style={{ top: 540 }}>
+          <div className="relative -left-20" style={{ top: 500 }}>
             <Image
               src="/images/blob-dashed.svg"
               alt="bg"
@@ -93,7 +93,7 @@ const Banner = () => {
               width={500}
             />
           </div>
-          <div className="relative -left-4 top-16">
+          <div className="relative -left-4 top-6">
             <Image
               alt="bg"
               src="/images/background.svg"
@@ -102,12 +102,12 @@ const Banner = () => {
               width={500}
             />
           </div>
-          <div className="relative left-6" style={{ top: -554 }}>
+          <div className="relative left-6" style={{ top: -500 }}>
             <Image
               alt="bunny image"
-              src="/nw_q-x88_400x400.png"
-              height={500}
-              width={500}
+              src="/sofa.png"
+              height={410}
+              width={410}
             />
           </div>
         </div>
