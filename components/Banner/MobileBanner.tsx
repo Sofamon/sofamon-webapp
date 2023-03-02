@@ -72,12 +72,12 @@ export const MobileBanner = () => {
             width={340}
           />
         </div>
-        <div className="relative left-4" style={{ top: -380 }}>
+        <div className="relative left-4" style={{ top: -330 }}>
           <Image
             alt="bunny image"
             src="/sofa.png"
-            height={350}
-            width={350}
+            height={300}
+            width={300}
           />
         </div>
       </div>
