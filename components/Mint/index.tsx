@@ -49,6 +49,35 @@ const SwipeableNFT = ({
     setIsMintLoading(true);
   };
 
+  let updateInterval: any;
+  useEffect(() => {
+    const updateTxStatus = async () => {
+      const response = await fetch(
+        `https://api-goerli.etherscan.io/api?module=transaction&action=gettxreceiptstatus&txhash=${mintData.hash}&apikey=6956YW7QNDVXDS9DZJH8ES3RX38IEHTRD4`
+      );
+      const res = await response.json();
+      if (res.result.status === "1") {
+        console.log(mintData.hash);
+        setIsMintStarted(false);
+        setIsMinted(true);
+        clearInterval(updateInterval);
+      }
+      if (res.result.status === "0") {
+        setIsMintStarted(false);
+        setIsMinted(false);
+        clearInterval(updateInterval);
+      }
+    };
+
+    if (mintData.hash && isMintStarted) {
+      updateTxStatus();
+      updateInterval = setInterval(updateTxStatus, 2000);
+    }
+    return () => {
+      clearInterval(updateInterval);
+    };
+  }, [mintData]);
+
   useEffect(() => {
     (window as any).Cypher({
       address: address,
@@ -122,35 +151,6 @@ const SwipeableNFT = ({
       }
     })();
   }, [address, currentCharacterId]);
-
-  let updateInterval: any;
-  useEffect(() => {
-    const updateTxStatus = async () => {
-      const response = await fetch(
-        `https://api-goerli.etherscan.io/api?module=transaction&action=gettxreceiptstatus&txhash=${mintData.hash}&apikey=6956YW7QNDVXDS9DZJH8ES3RX38IEHTRD4`
-      );
-      const res = await response.json();
-      console.log(res, mintData)
-      if (res.result.status === "1") {
-        setIsMintStarted(false);
-        setIsMinted(true);
-        clearInterval(updateInterval);
-      }
-      if (res.result.status === "0") {
-        setIsMintStarted(false);
-        setIsMinted(false);
-        clearInterval(updateInterval);
-      }
-    };
-
-    if (mintData.hash && isMintStarted) {
-      updateTxStatus();
-      updateInterval = setInterval(updateTxStatus, 2000);
-    }
-    return () => {
-      clearInterval(updateInterval);
-    };
-  }, [mintData]);
 
   return (
     <div
