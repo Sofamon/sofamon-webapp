@@ -117,20 +117,6 @@ const Header = () => {
     }
   };
 
-  const web3ModalLogout = async () => {
-    try {
-      if (signClient) {
-        signClient.disconnect({
-          topic: session.topic as string,
-          reason: { code: 6000, message: "User disconnected" },
-        });
-      }
-    } catch (e) {
-      console.log(e);
-    }
-    logout();
-  };
-
   const web3AuthLogin = async () => {
     try {
       if (!web3Auth) {
@@ -147,10 +133,9 @@ const Header = () => {
 
   const walletLogout = async () => {
     try {
-      if (!web3Auth) {
-        return;
+      if (web3Auth) {
+        const web3AuthProvider = await web3Auth.logout();
       }
-      const web3AuthProvider = await web3Auth.logout();
     } catch (error) {
       console.log(error);
     }
