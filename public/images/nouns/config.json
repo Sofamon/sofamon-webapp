@@ -1,0 +1,85 @@
+{
+  "name": "Noun",
+  "dimension": 192,
+  "positions": {
+    "stand": {
+      "id": "00",
+      "default": "01",
+      "frames": 1
+    },
+    "fall": {
+      "id": "01",
+      "default": "01",
+      "frames": 3
+    },
+    "walk": {
+      "id": "02",
+      "default": "02",
+      "left": "01",
+      "right": "03",
+      "frames": 3
+    },
+    "drag": {
+      "id": "03",
+      "softLeft": "02",
+      "left": "02",
+      "onAir": "01",
+      "softRight": "03",
+      "right": "03",
+      "frames": 3
+    },
+    "sofaMode": {
+      "id": "04",
+      "delay": 250,
+      "frames": 5
+    },
+    "birthOfNFT": {
+      "id": "05",
+      "loop": 1,
+      "delay": 250,
+      "frames": 7
+    },
+    "sendTransaction": {
+      "id": "06",
+      "loop": 0,
+      "delay": 250,
+      "frames": 0
+    },
+    "buyNFT": {
+      "id": "07",
+      "loop": 0,
+      "delay": 250,
+      "frames": 0
+    },
+    "getAirdrop": {
+      "id": "08",
+      "loop": 0,
+      "delay": 250,
+      "frames": 0
+    },
+    "levelUp": {
+      "id": "09",
+      "loop": 0,
+      "delay": 250,
+      "frames": 0
+    },
+    "checkPrice": {
+      "id": "10",
+      "final": "0",
+      "delay": 325,
+      "frames": 0
+    },
+    "jumpOnto": {
+      "id": "11",
+      "default": "01",
+      "frames": 1
+    },
+    "stealObject": {
+      "id": "12",
+      "default": "01",
+      "left": "02",
+      "right": "03",
+      "frames": 3
+    }
+  }
+}
