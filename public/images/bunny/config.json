@@ -30,30 +30,43 @@
     },
     "sofaMode": {
       "id": "04",
+      "delay": 125,
       "frames": 6
     },
     "birthOfNFT": {
       "id": "05",
+      "loop": 1,
+      "delay": 125,
       "frames": 19
     },
     "sendTransaction": {
       "id": "06",
+      "loop": 1,
+      "delay": 125,
       "frames": 13
     },
     "buyNFT": {
       "id": "07",
+      "loop": 3,
+      "delay": 125,
       "frames": 4
     },
     "getAirdrop": {
       "id": "08",
+      "loop": 1,
+      "delay": 125,
       "frames": 8
     },
     "levelUp": {
       "id": "09",
+      "loop": 1,
+      "delay": 125,
       "frames": 14
     },
     "checkPrice": {
       "id": "10",
+      "final": "16",
+      "delay": 175,
       "frames": 16
     },
     "jumpOnto": {
@@ -67,10 +80,6 @@
       "left": "01",
       "right": "03",
       "frames": 3
-    },
-    "hug": {
-      "id": "13",
-      "frames": 0
     }
   }
 }
