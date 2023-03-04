@@ -108,11 +108,17 @@ const SwipeableNFT = ({
     setTxError(txErrorRaw);
   }, [txErrorRaw]);
 
+  useEffect(() => {
+    if (txSuccess) onMint();
+  }, [txSuccess]);
+
   const isMinted = txSuccess;
 
   const onMint = () => {
     chrome.runtime.sendMessage(chromeExtensionId, {
       info: "mintNFT",
+      character:
+        currentCharacterId > 0 ? characters[currentCharacterId - 1].id : "",
     });
   };
 
@@ -171,7 +177,7 @@ const SwipeableNFT = ({
                     src={`/${characters[currentCharacterId - 1].id}.png`}
                     width="500"
                     height="500"
-                    alt="Sofamon NFT"
+                    alt="Hikari NFT"
                   />
                 )}
               </FrontCard>
@@ -182,7 +188,7 @@ const SwipeableNFT = ({
                       src={`/${characters[currentCharacterId - 1].id}.png`}
                       width="80"
                       height="80"
-                      alt="Sofamon NFT"
+                      alt="Hikari NFT"
                       className="rounded-lg"
                     />
                   )}
@@ -299,10 +305,7 @@ const SwipeableNFT = ({
                   (!isExtensionInstalled && "hidden")
                 }
                 onClick={() => {
-                  if (!isMintLoading && !isMintStarted) {
-                    onMint();
-                    mint?.();
-                  }
+                  if (!isMintLoading && !isMintStarted) mint?.();
                 }}
                 disabled={isMintLoading || isMintStarted || isAlreadyMinted}
               >
