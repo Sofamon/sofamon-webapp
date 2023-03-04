@@ -8,19 +8,9 @@ import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 const chromeExtensionId = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID as string;
 const characters = [
   {
-    id: "naruto",
-    name: "Naruto Uzumaki",
-    shortCode: "naruto-naruto-uzumaki",
-  },
-  {
-    id: "sasuke",
-    name: "Sasuke Uchiha",
-    shortCode: "naruto-sasuke",
-  },
-  {
-    id: "noun",
-    name: "Noun",
-    shortCode: "noun",
+    id: "bunny",
+    name: "Bunny",
+    shortCode: "bunny",
   },
 ];
 const Inventory = () => {

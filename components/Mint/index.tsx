@@ -21,7 +21,7 @@ const contractConfig = {
   abi,
 };
 
-const characters = ["naruto", "sasuke", "noun"];
+const characters = ["bunny"];
 const SwipeableNFT = ({
   currentCharacterId,
   setCurrentCharacterId,

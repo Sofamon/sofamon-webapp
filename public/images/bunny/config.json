@@ -1,0 +1,76 @@
+{
+  "name": "Bunny",
+  "dimension": 192,
+  "positions": {
+    "stand": {
+      "id": "00",
+      "default": "01",
+      "frames": 1
+    },
+    "fall": {
+      "id": "01",
+      "default": "01",
+      "frames": 6
+    },
+    "walk": {
+      "id": "02",
+      "default": "02",
+      "left": "01",
+      "right": "03",
+      "frames": 3
+    },
+    "drag": {
+      "id": "03",
+      "softLeft": "02",
+      "left": "01",
+      "onAir": "03",
+      "softRight": "04",
+      "right": "05",
+      "frames": 5
+    },
+    "sofaMode": {
+      "id": "04",
+      "frames": 6
+    },
+    "birthOfNFT": {
+      "id": "05",
+      "frames": 19
+    },
+    "sendTransaction": {
+      "id": "06",
+      "frames": 13
+    },
+    "buyNFT": {
+      "id": "07",
+      "frames": 4
+    },
+    "getAirdrop": {
+      "id": "08",
+      "frames": 8
+    },
+    "levelUp": {
+      "id": "09",
+      "frames": 14
+    },
+    "checkPrice": {
+      "id": "10",
+      "frames": 16
+    },
+    "jumpOnto": {
+      "id": "11",
+      "default": "01",
+      "frames": 1
+    },
+    "stealObject": {
+      "id": "12",
+      "default": "02",
+      "left": "01",
+      "right": "03",
+      "frames": 3
+    },
+    "hug": {
+      "id": "13",
+      "frames": 0
+    }
+  }
+}
