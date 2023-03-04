@@ -1,20 +1,15 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import characters from "../../characters";
 import detectExtension from "../../libs/detectExtension";
 import { useAccount } from "wagmi";
 import Link from "next/link";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 
 const chromeExtensionId = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID as string;
-const characters = [
-  {
-    id: "bunny",
-    name: "Bunny",
-    shortCode: "bunny",
-  },
-];
 const Inventory = () => {
   const [isExtensionInstalled, setIsExtensionInstalled] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState("");
   const [currentCharacterId, setCurrentCharacterId] = useState(1);
   const [isAlreadyMinted, setIsAlreadyMinted] = useState(false);
   const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
@@ -23,6 +18,7 @@ const Inventory = () => {
   if (!isConnected) window.location.assign("/");
 
   useEffect(() => {
+    setIsAlreadyMinted(false);
     (async () => {
       const options = {
         method: "GET",
@@ -40,12 +36,11 @@ const Inventory = () => {
         options
       );
       const res = await response.json();
-      setIsAlreadyMinted(false);
       for (let item of res?.assets) {
         if (
           String(item.contract).toLowerCase() ===
             contractAddress?.toLowerCase() &&
-          parseInt(item.tokenId) === currentCharacterId
+          parseInt(item.tokenId) === characters[currentCharacterId - 1].tokenId
         ) {
           setIsAlreadyMinted(true);
           break;
@@ -65,8 +60,22 @@ const Inventory = () => {
     chrome.runtime.sendMessage(chromeExtensionId, {
       info: "changeCharacter",
       characterName: characters[currentCharacterId - 1].name,
-      characterId: characters[currentCharacterId - 1].shortCode,
+      characterId:
+        selectedAsset === ""
+          ? characters[currentCharacterId - 1].shortCode
+          : selectedAsset,
     });
+  };
+
+  const onLevelUp = () => {
+    chrome.runtime.sendMessage(chromeExtensionId, {
+      info: "levelUp",
+    });
+  };
+
+  const handleSelectAsset = (id: string) => {
+    if (selectedAsset === id) setSelectedAsset("");
+    else setSelectedAsset(id);
   };
 
   return (
@@ -82,24 +91,34 @@ const Inventory = () => {
                 left: 2,
               }}
               onClick={() => {
+                setSelectedAsset("");
                 setCurrentCharacterId(
                   currentCharacterId - 1 == 0
                     ? characters.length
                     : currentCharacterId - 1
                 );
-                setIsAlreadyMinted(false);
               }}
             >
               <TriangleDownIcon boxSize={3} />
             </button>
           </div>
-          <Image
-            src={`/${characters[currentCharacterId - 1].id}.png`}
-            className={"" + (!isAlreadyMinted && "grayscale")}
-            width="300"
-            height="300"
-            alt="Hikari NFT"
-          />
+          {selectedAsset !== "" ? (
+            <Image
+              src={`/images/${selectedAsset}/0001.png`}
+              className={"" + (!isAlreadyMinted && "grayscale")}
+              width="300"
+              height="300"
+              alt="Sofamon NFT"
+            />
+          ) : (
+            <Image
+              src={`/${characters[currentCharacterId - 1].id}.png`}
+              className={"" + (!isAlreadyMinted && "grayscale")}
+              width="300"
+              height="300"
+              alt="Sofamon NFT"
+            />
+          )}
           <div className="ml-3 bg-gray-100 rounded-3xl px-2 h-6 outline-none">
             <button
               className="text-2xl text-gray-400 outline-none relative rotate-90"
@@ -109,10 +128,10 @@ const Inventory = () => {
                 left: 4,
               }}
               onClick={() => {
+                setSelectedAsset("");
                 setCurrentCharacterId(
                   (currentCharacterId % characters.length) + 1
                 );
-                setIsAlreadyMinted(false);
               }}
             >
               <TriangleUpIcon boxSize={3} />
@@ -171,14 +190,33 @@ const Inventory = () => {
       </div>
       <div className="hidden md:block lg:block xl:block">
         <div className="pl-28 h-min grid relative -top-6 grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-16">
-          {[...Array(6)].map((_e, i) => (
+          {characters[currentCharacterId - 1].assets.map((id, i) => (
             <div
               key={i}
-              className="h-40 w-40 bg-zinc-300 flex items-center justify-center rounded-xl text-6xl"
+              onClick={() => handleSelectAsset(id)}
+              className={
+                "h-40 w-40 flex items-center justify-center rounded-xl cursor-pointer text-6xl " +
+                (selectedAsset === id ? "bg-blue-400" : "bg-zinc-300")
+              }
             >
-              ?
+              <Image
+                src={`/images/${id}/asset.png`}
+                height={192}
+                width={192}
+                alt={id}
+              />
             </div>
           ))}
+          {[...Array(6 - characters[currentCharacterId - 1].assets.length)].map(
+            (_e, i) => (
+              <div
+                key={i}
+                className="h-40 w-40 bg-zinc-300 flex items-center justify-center rounded-xl text-6xl cursor-not-allowed"
+              >
+                ?
+              </div>
+            )
+          )}
         </div>
         <div className="flex mt-12 level-bar">
           <div className="bg-gray-300 rounded-xl mt-2 mr-7 w-64 h-4">
@@ -193,6 +231,7 @@ const Inventory = () => {
             style={{
               borderWidth: "0.16rem",
             }}
+            onClick={onLevelUp}
             className="hover:bg-purple-600 hover:border-purple-600 hover:text-white disabled:text-gray-500 disabled:cursor-not-allowed disabled:border-gray-300 disabled:hover:bg-purple-600 disabled:hover:border-purple-600 disabled:hover:text-white outline-none font-bold text-lg px-6 py-2 rounded-3xl whitespace-nowrap"
           >
             Level up
@@ -200,13 +239,33 @@ const Inventory = () => {
         </div>
       </div>
       <div className="h-min grid md:hidden lg:hidden xl:hidden grid-cols-1 pt-14 pb-4 gap-10">
-        {[...Array(6)].map((_e, i) => (
+        {characters[currentCharacterId - 1].assets.map((id, i) => (
           <center key={i}>
-            <div className="h-40 w-40 bg-zinc-300 flex items-center justify-center rounded-xl text-6xl">
-              ?
+            <div
+              className={
+                "h-40 w-40 flex items-center justify-center rounded-xl cursor-pointer text-6xl " +
+                (selectedAsset === id ? "bg-blue-400" : "bg-zinc-300")
+              }
+              onClick={() => handleSelectAsset(id)}
+            >
+              <Image
+                src={`/images/${id}/asset.png`}
+                height={192}
+                width={192}
+                alt={id}
+              />
             </div>
           </center>
         ))}
+        {[...Array(6 - characters[currentCharacterId - 1].assets.length)].map(
+          (_e, i) => (
+            <center key={i}>
+              <div className="h-40 w-40 bg-zinc-300 flex items-center justify-center rounded-xl text-6xl">
+                ?
+              </div>
+            </center>
+          )
+        )}
       </div>
       <div className="flex md:hidden lg:hidden xl:hidden mt-12 px-4 mb-2">
         <div className="bg-gray-300 rounded-xl mt-2 mr-7 w-28 h-4">
@@ -221,6 +280,7 @@ const Inventory = () => {
           style={{
             borderWidth: "0.16rem",
           }}
+          onClick={onLevelUp}
           className="hover:bg-purple-600 hover:border-purple-600 hover:text-white disabled:text-gray-500 disabled:cursor-not-allowed disabled:border-gray-300 disabled:hover:bg-purple-600 disabled:hover:border-purple-600 disabled:hover:text-white outline-none font-bold text-lg px-6 py-2 rounded-3xl whitespace-nowrap"
         >
           Level up

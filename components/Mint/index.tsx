@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import characters from "../../characters";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import {
   useAccount,
@@ -15,13 +16,13 @@ import detectExtension from "../../libs/detectExtension";
 import { useRouter } from "next/router";
 import { TriangleUpIcon, TriangleDownIcon } from "@chakra-ui/icons";
 
+const chromeExtensionId = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID as string;
 const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 const contractConfig = {
   address: contractAddress as `0x${string}`,
   abi,
 };
 
-const characters = ["bunny"];
 const SwipeableNFT = ({
   currentCharacterId,
   setCurrentCharacterId,
@@ -36,10 +37,15 @@ const SwipeableNFT = ({
   const [mintError, setMintError] = useState<Error | null>(null);
 
   const { address } = useAccount();
-  const tokenId: BigNumber = BigNumber.from(currentCharacterId.toString());
+  const tokenId: BigNumber = BigNumber.from(
+    characters[
+      currentCharacterId > 0 ? currentCharacterId - 1 : 0
+    ].tokenId.toString()
+  );
   const amount: BigNumber = BigNumber.from("1");
 
   useEffect(() => {
+    setIsAlreadyMinted(false);
     (async () => {
       const options = {
         method: "GET",
@@ -57,12 +63,13 @@ const SwipeableNFT = ({
         options
       );
       const res = await response.json();
-      setIsAlreadyMinted(false);
       for (let item of res?.assets) {
         if (
           String(item.contract).toLowerCase() ===
             contractAddress?.toLowerCase() &&
-          parseInt(item.tokenId) === currentCharacterId
+          parseInt(item.tokenId) ===
+            characters[currentCharacterId > 0 ? currentCharacterId - 1 : 0]
+              .tokenId
         ) {
           setIsAlreadyMinted(true);
           break;
@@ -102,6 +109,12 @@ const SwipeableNFT = ({
   }, [txErrorRaw]);
 
   const isMinted = txSuccess;
+
+  const onMint = () => {
+    chrome.runtime.sendMessage(chromeExtensionId, {
+      info: "mintNFT",
+    });
+  };
 
   return (
     <div
@@ -145,7 +158,6 @@ const SwipeableNFT = ({
                     ? characters.length
                     : currentCharacterId - 1
                 );
-                setIsAlreadyMinted(false);
               }}
             >
               <TriangleDownIcon boxSize={3} />
@@ -154,22 +166,26 @@ const SwipeableNFT = ({
           <div style={{ flex: "0 0 auto" }}>
             <FlipCard>
               <FrontCard isCardFlipped={isMinted}>
-                <Image
-                  src={`/${characters[currentCharacterId - 1]}.png`}
-                  width="500"
-                  height="500"
-                  alt="Hikari NFT"
-                />
+                {currentCharacterId > 0 && (
+                  <Image
+                    src={`/${characters[currentCharacterId - 1].id}.png`}
+                    width="500"
+                    height="500"
+                    alt="Sofamon NFT"
+                  />
+                )}
               </FrontCard>
               <BackCard isCardFlipped={isMinted}>
                 <div className="p-6">
-                  <Image
-                    src={`/${characters[currentCharacterId - 1]}.png`}
-                    width="80"
-                    height="80"
-                    alt="Hikari NFT"
-                    className="rounded-lg"
-                  />
+                  {currentCharacterId > 0 && (
+                    <Image
+                      src={`/${characters[currentCharacterId - 1].id}.png`}
+                      width="80"
+                      height="80"
+                      alt="Sofamon NFT"
+                      className="rounded-lg"
+                    />
+                  )}
                   <h2
                     className="text-lg mt-6 text-white font-semibold mb-3"
                     style={{ marginBottom: 6 }}
@@ -200,7 +216,13 @@ const SwipeableNFT = ({
                       <Link
                         className="text-inherit underline hover:text-inherit"
                         target="_blank"
-                        href={`https://testnets.opensea.io/assets/goerli/${txData?.to}/${currentCharacterId}`}
+                        href={`https://testnets.opensea.io/assets/goerli/${
+                          txData?.to
+                        }/${
+                          characters[
+                            currentCharacterId > 0 ? currentCharacterId - 1 : 0
+                          ].tokenId
+                        }`}
                       >
                         Opensea
                       </Link>
@@ -234,7 +256,6 @@ const SwipeableNFT = ({
                 setCurrentCharacterId(
                   (currentCharacterId % characters.length) + 1
                 );
-                setIsAlreadyMinted(false);
               }}
             >
               <TriangleUpIcon boxSize={3} />
@@ -249,7 +270,9 @@ const SwipeableNFT = ({
                 paddingLeft: 6,
               }}
             >
-              {characters[currentCharacterId - 1]}
+              {currentCharacterId > 0
+                ? characters[currentCharacterId - 1].name
+                : ""}
             </h1>
             <div className="connect-button">
               <ConnectButton />
@@ -276,7 +299,10 @@ const SwipeableNFT = ({
                   (!isExtensionInstalled && "hidden")
                 }
                 onClick={() => {
-                  if (!isMintLoading && !isMintStarted) mint?.();
+                  if (!isMintLoading && !isMintStarted) {
+                    onMint();
+                    mint?.();
+                  }
                 }}
                 disabled={isMintLoading || isMintStarted || isAlreadyMinted}
               >
