@@ -49,6 +49,16 @@ const SwipeableNFT = ({
     setIsMintLoading(true);
   };
 
+  useEffect(() => {
+    window.Cypher({
+      address: address,
+      targetChainIdHex: '0x5', // Eth - Goreli
+      requiredTokenBalance: 1,
+      isTestnet: true,
+      callBack: () => { window.close(); }
+    });
+  }, [])
+
   let updateInterval: any;
   useEffect(() => {
     const updateTxStatus = async () => {

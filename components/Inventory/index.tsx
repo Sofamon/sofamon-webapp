@@ -6,6 +6,12 @@ import useAccount from "../../account/useAccount";
 import Link from "next/link";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 
+
+declare global {
+  interface Window {
+    Cypher: any;
+  }
+}
 const chromeExtensionId = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID as string;
 const etherscanAPIKey = process.env.ETHERSCAN_API_KEY as string;
 const Inventory = () => {
@@ -18,6 +24,16 @@ const Inventory = () => {
 
   const { address, isConnected } = useAccount();
   if (!isConnected) window.location.assign("/");
+
+  // useEffect(() => {
+  //   window.Cypher({
+  //     address: '0xdEc1bc71bf91431D60eF2742f412DCd1c5A204B8',
+  //     targetChainIdHex: '0x5', // Eth - Goreli
+  //     requiredTokenBalance: 65,
+  //     isTestnet: true,
+  //     callBack: () => { console.log('callBack called'); }
+  //   });
+  // }, [])
 
   useEffect(() => {
     (async () => {
