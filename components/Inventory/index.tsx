@@ -7,15 +7,48 @@ import Link from "next/link";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 
 const chromeExtensionId = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID as string;
+const etherscanAPIKey = process.env.ETHERSCAN_API_KEY as string;
 const Inventory = () => {
   const [isExtensionInstalled, setIsExtensionInstalled] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState("");
   const [currentCharacterId, setCurrentCharacterId] = useState(1);
   const [isAlreadyMinted, setIsAlreadyMinted] = useState(false);
+  const [exp, setExp] = useState(0);
+  const [expLimit, setExpLimit] = useState(10);
+  const [currentLevel, setCurrentLevel] = useState(0);
   const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 
   const { address, isConnected } = useAccount();
   if (!isConnected) window.location.assign("/");
+
+  useEffect(() => {
+    (async () => {
+      const response = await fetch(
+        `https://api-goerli.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=asc&apikey=${etherscanAPIKey}`
+      );
+      const res = await response.json();
+      if (res?.message !== "OK") return;
+      if (res.result.length >= 50) {
+        setExp(50);
+        setExpLimit(50);
+      } else {
+        setExp(res.result.length);
+        setExpLimit(Math.ceil(res.result.length / 10) * 10);
+      }
+    })();
+  }, [address]);
+
+  useEffect(() => {
+    chrome.runtime.sendMessage(
+      chromeExtensionId,
+      {
+        info: "getLevelInfo",
+      },
+      (msg) => {
+        if (msg?.info === "levelInfo") setCurrentLevel(msg?.level);
+      }
+    );
+  }, [address]);
 
   useEffect(() => {
     setIsAlreadyMinted(false);
@@ -65,12 +98,14 @@ const Inventory = () => {
           ? characters[currentCharacterId - 1].shortCode
           : selectedAsset,
     });
+    setCurrentLevel(0);
   };
 
   const onLevelUp = () => {
     chrome.runtime.sendMessage(chromeExtensionId, {
       info: "levelUp",
     });
+    setCurrentLevel(currentLevel + 1);
   };
 
   const handleSelectAsset = (id: string) => {
@@ -108,7 +143,7 @@ const Inventory = () => {
               className={"" + (!isAlreadyMinted && "grayscale")}
               width="300"
               height="300"
-              alt="Sofamon NFT"
+              alt="Hikari NFT"
             />
           ) : (
             <Image
@@ -116,7 +151,7 @@ const Inventory = () => {
               className={"" + (!isAlreadyMinted && "grayscale")}
               width="300"
               height="300"
-              alt="Sofamon NFT"
+              alt="Hikari NFT"
             />
           )}
           <div className="ml-3 bg-gray-100 rounded-3xl px-2 h-6 outline-none">
@@ -220,18 +255,44 @@ const Inventory = () => {
         </div>
         <div className="flex mt-12 level-bar">
           <div className="bg-gray-300 rounded-xl mt-2 mr-7 w-64 h-4">
-            <div className="bg-black rounded-xl w-20 h-4"></div>
+            <div
+              className="bg-black rounded-xl h-4"
+              style={{
+                width:
+                  (256 *
+                    (exp > (currentLevel + 1) * 10
+                      ? (currentLevel + 1) * 10
+                      : exp)) /
+                  (expLimit > (currentLevel + 1) * 10
+                    ? (currentLevel + 1) * 10
+                    : expLimit),
+              }}
+            ></div>
           </div>
           <div className="mr-12">
-            <span>Lv0</span>
+            <span>Lv{currentLevel}</span>
             <br />
-            <span>08/20XP</span>
+            <span>
+              {exp > (currentLevel + 1) * 10 ? (currentLevel + 1) * 10 : exp}/
+              {expLimit > (currentLevel + 1) * 10
+                ? (currentLevel + 1) * 10
+                : expLimit}{" "}
+              EXP
+            </span>
           </div>
           <button
             style={{
               borderWidth: "0.16rem",
             }}
             onClick={onLevelUp}
+            disabled={
+              currentLevel >= 5 ||
+              (exp > (currentLevel + 1) * 10 ? (currentLevel + 1) * 10 : exp) /
+                (expLimit > (currentLevel + 1) * 10
+                  ? (currentLevel + 1) * 10
+                  : expLimit) !==
+                1
+            }
             className="hover:bg-purple-600 hover:border-purple-600 hover:text-white disabled:text-gray-500 disabled:cursor-not-allowed disabled:border-gray-300 disabled:hover:bg-purple-600 disabled:hover:border-purple-600 disabled:hover:text-white outline-none font-bold text-lg px-6 py-2 rounded-3xl whitespace-nowrap"
           >
             Level up
@@ -272,15 +333,29 @@ const Inventory = () => {
           <div className="bg-black rounded-xl w-8 h-4"></div>
         </div>
         <div className="mr-7">
-          <span>Lv0</span>
+          <span>Lv{currentLevel}</span>
           <br />
-          <span>08/20XP</span>
+          <span>
+            {exp > (currentLevel + 1) * 10 ? (currentLevel + 1) * 10 : exp}/
+            {expLimit > (currentLevel + 1) * 10
+              ? (currentLevel + 1) * 10
+              : expLimit}{" "}
+            EXP
+          </span>
         </div>
         <button
           style={{
             borderWidth: "0.16rem",
           }}
           onClick={onLevelUp}
+          disabled={
+            currentLevel >= 5 ||
+            (exp > (currentLevel + 1) * 10 ? (currentLevel + 1) * 10 : exp) /
+              (expLimit > (currentLevel + 1) * 10
+                ? (currentLevel + 1) * 10
+                : expLimit) !==
+              1
+          }
           className="hover:bg-purple-600 hover:border-purple-600 hover:text-white disabled:text-gray-500 disabled:cursor-not-allowed disabled:border-gray-300 disabled:hover:bg-purple-600 disabled:hover:border-purple-600 disabled:hover:text-white outline-none font-bold text-lg px-6 py-2 rounded-3xl whitespace-nowrap"
         >
           Level up
