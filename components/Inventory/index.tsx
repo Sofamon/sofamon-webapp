@@ -25,16 +25,6 @@ const Inventory = () => {
   const { address, isConnected } = useAccount();
   if (!isConnected) window.location.assign("/");
 
-  // useEffect(() => {
-  //   window.Cypher({
-  //     address: '0xdEc1bc71bf91431D60eF2742f412DCd1c5A204B8',
-  //     targetChainIdHex: '0x5', // Eth - Goreli
-  //     requiredTokenBalance: 65,
-  //     isTestnet: true,
-  //     callBack: () => { console.log('callBack called'); }
-  //   });
-  // }, [])
-
   useEffect(() => {
     (async () => {
       const response = await fetch(

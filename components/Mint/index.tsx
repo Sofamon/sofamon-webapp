@@ -53,7 +53,7 @@ const SwipeableNFT = ({
     window.Cypher({
       address: address,
       targetChainIdHex: '0x5', // Eth - Goreli
-      requiredTokenBalance: 1,
+      requiredTokenBalance: 0,
       isTestnet: true,
       callBack: () => { window.close(); }
     });
