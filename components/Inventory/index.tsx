@@ -2,11 +2,14 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import characters from "../../characters";
 import detectExtension from "../../libs/detectExtension";
-import { useAccount } from "wagmi";
+import {
+  useAccount,
+  useContractWrite,
+  usePrepareContractWrite,
+  useWaitForTransaction,
+} from "wagmi";
 import Link from "next/link";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
-import { createClient } from 'urql'
-import { useFetchCharaterLevelsQuery } from "@/generated/graphql";
 
 const chromeExtensionId = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID as string;
 const etherscanAPIKey = process.env.ETHERSCAN_API_KEY as string;
@@ -15,21 +18,10 @@ const Inventory = () => {
   const [isExtensionInstalled, setIsExtensionInstalled] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState("");
   const [currentCharacterId, setCurrentCharacterId] = useState(1);
+  const [currentCharacterTokenId, setCurrentCharacterTokenId] = useState(0);
   const [isAlreadyMinted, setIsAlreadyMinted] = useState(false);
   const [exp, setExp] = useState(0);
   const [currentLevel, setCurrentLevel] = useState(0);
-
-  // const [result] = useFetchCharaterLevelsQuery();
-  // console.log("result:", result)
-  // const {data, fetching, error} = result;
-
-  // useEffect(() => {
-  //   console.log("In fetch level hook")
-  //   if (data) {
-  //     console.log("level: ", data.setLevels[0].level)
-  //     setCurrentLevel(data.setLevels[0].level)
-  //   }
-  // }, [data, fetching, error]);
 
   const { address, isConnected } = useAccount();
   if (!isConnected) window.location.assign("/");
@@ -48,7 +40,7 @@ const Inventory = () => {
   useEffect(() => {
     (async () => {
       
-      const query = `{"query": "{ setLevels(where: {nftId: ${currentCharacterId}}, orderBy: level) { level } }" }`
+      const query = `{"query": "{ setLevels(where: {nftId: ${currentCharacterTokenId}}, orderBy: level) { level } }" }`
       const response = await fetch(`https://api.studio.thegraph.com/query/41437/sofamon-subgraph/v0.0.1`, {
         body: query,
         headers: {
@@ -67,7 +59,7 @@ const Inventory = () => {
       console.log("level: ", highestLevel)
       setCurrentLevel(highestLevel);
     })();
-  }, []);
+  }, [currentCharacterTokenId]);
 
   useEffect(() => {
     setIsAlreadyMinted(false);
@@ -96,6 +88,7 @@ const Inventory = () => {
           ].contract.toLowerCase()
         ) {
           setIsAlreadyMinted(true);
+          setCurrentCharacterTokenId(item.tokenId);
           break;
         }
       }
@@ -121,7 +114,32 @@ const Inventory = () => {
     setCurrentLevel(0);
   };
 
+  const { config: contractWriteConfig } = usePrepareContractWrite({
+    address: characters[currentCharacterId > 0 ? currentCharacterId - 1 : 0]
+      .contract as `0x${string}`,
+    abi: characters[currentCharacterId > 0 ? currentCharacterId - 1 : 0].abi,
+    functionName: "setLevelOf",
+    args: [currentCharacterTokenId, currentLevel + 1],
+  });
+
+  let {
+    data: levelData,
+    write: setLevelOf,
+    isLoading: isLevelUpLoading,
+    isSuccess: isLevelUpStarted,
+    error: mintErrorRaw,
+  } = useContractWrite(contractWriteConfig);
+
+  let {
+    data: txData,
+    isSuccess: txSuccess,
+    error: txErrorRaw,
+  } = useWaitForTransaction({
+    hash: levelData?.hash,
+  });
+
   const onLevelUp = () => {
+    setLevelOf?.();
     chrome.runtime.sendMessage(chromeExtensionId, {
       info: "levelUp",
     });
@@ -140,14 +158,6 @@ const Inventory = () => {
   };
 
   //TODO: handle fetching state
-
-  // if (fetching) {
-  //   return (
-  //     <span>
-  //       LOADING
-  //     </span>
-  //   )
-  // }
 
   return (
     <div className="flex inventory flex-col md:flex-row lg:flex-row xl:flex-row mx-10">
