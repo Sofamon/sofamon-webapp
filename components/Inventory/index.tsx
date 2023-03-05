@@ -36,10 +36,21 @@ const Inventory = () => {
 
   useEffect(() => {
     (async () => {
+      const response = await fetch(
+        `https://api-goerli.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=asc&apikey=${etherscanAPIKey}`
+      );
+      const res = await response.json();
+      if (res?.message !== "OK") return;
+      setExp(res.result.length);
+    })();
+  }, [address]);
+
+  useEffect(() => {
+    (async () => {
       
       const query = `{"query": "{ setLevels(where: {nftId: ${currentCharacterId}}, orderBy: level) { level } }" }`
       const response = await fetch(`https://api.studio.thegraph.com/query/41437/sofamon/v0.0.1`, {
-        body: query,
+        body: query,gi
         headers: {
           "Content-Type": "application/json"
         },
