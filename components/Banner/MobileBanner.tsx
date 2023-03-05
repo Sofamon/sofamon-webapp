@@ -37,7 +37,7 @@ export const MobileBanner = () => {
             <Link
               href={
                 !isExtensionInstalled
-                  ? "https://chrome.google.com/webstore/category/extensions"
+                  ? "https://chartreuse-look-9e2.notion.site/Install-Sofamon-Extension-5e53b6c99f9848beb5ab409b731b5c38"
                   : "/mint?id=1"
               }
             >

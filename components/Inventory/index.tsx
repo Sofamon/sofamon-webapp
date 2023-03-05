@@ -201,7 +201,7 @@ const Inventory = () => {
               className="mt-3 hover:bg-purple-600 hover:border-purple-600 hover:text-white disabled:text-gray-500 disabled:cursor-not-allowed disabled:border-gray-300 disabled:hover:bg-purple-600 disabled:hover:border-purple-600 disabled:hover:text-white outline-none font-bold text-lg px-6 py-2 rounded-3xl whitespace-nowrap"
             >
               <Link
-                href={"https://chrome.google.com/webstore/category/extensions"}
+                href={"https://chartreuse-look-9e2.notion.site/Install-Sofamon-Extension-5e53b6c99f9848beb5ab409b731b5c38"}
                 target="_blank"
                 rel="noreferrer"
               >

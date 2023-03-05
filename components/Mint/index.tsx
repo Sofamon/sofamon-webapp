@@ -276,7 +276,7 @@ const SwipeableNFT = ({
             {!isExtensionInstalled && (
               <Link
                 className="mt-3"
-                href={"https://chrome.google.com/webstore/category/extensions"}
+                href={"https://chartreuse-look-9e2.notion.site/Install-Sofamon-Extension-5e53b6c99f9848beb5ab409b731b5c38"}
                 target="_blank"
               >
                 Install Extension for Free Mint
