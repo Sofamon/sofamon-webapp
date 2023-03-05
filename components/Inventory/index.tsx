@@ -14,7 +14,6 @@ const Inventory = () => {
   const [currentCharacterId, setCurrentCharacterId] = useState(1);
   const [isAlreadyMinted, setIsAlreadyMinted] = useState(false);
   const [exp, setExp] = useState(0);
-  const [expLimit, setExpLimit] = useState(10);
   const [currentLevel, setCurrentLevel] = useState(0);
 
   const { address, isConnected } = useAccount();
@@ -27,13 +26,7 @@ const Inventory = () => {
       );
       const res = await response.json();
       if (res?.message !== "OK") return;
-      if (res.result.length >= 50) {
-        setExp(50);
-        setExpLimit(50);
-      } else {
-        setExp(res.result.length);
-        setExpLimit(Math.ceil(res.result.length / 10) * 10);
-      }
+      setExp(res.result.length);
     })();
   }, [address]);
 
@@ -106,6 +99,12 @@ const Inventory = () => {
       info: "levelUp",
     });
     setCurrentLevel(currentLevel + 1);
+  };
+
+  const calculateExp = () => {
+    let total = 0;
+    for (let i = 1; i <= currentLevel; i++) total += i * 10;
+    return exp - total;
   };
 
   const handleSelectAsset = (id: string) => {
@@ -260,12 +259,10 @@ const Inventory = () => {
               style={{
                 width:
                   (256 *
-                    (exp > (currentLevel + 1) * 10
+                    (calculateExp() > (currentLevel + 1) * 10
                       ? (currentLevel + 1) * 10
-                      : exp)) /
-                  (expLimit > (currentLevel + 1) * 10
-                    ? (currentLevel + 1) * 10
-                    : expLimit),
+                      : calculateExp())) /
+                  ((currentLevel + 1) * 10),
               }}
             ></div>
           </div>
@@ -273,11 +270,7 @@ const Inventory = () => {
             <span>Lv{currentLevel}</span>
             <br />
             <span>
-              {exp > (currentLevel + 1) * 10 ? (currentLevel + 1) * 10 : exp}/
-              {expLimit > (currentLevel + 1) * 10
-                ? (currentLevel + 1) * 10
-                : expLimit}{" "}
-              EXP
+              {calculateExp()}/{(currentLevel + 1) * 10} EXP
             </span>
           </div>
           <button
@@ -286,12 +279,7 @@ const Inventory = () => {
             }}
             onClick={onLevelUp}
             disabled={
-              currentLevel >= 5 ||
-              (exp > (currentLevel + 1) * 10 ? (currentLevel + 1) * 10 : exp) /
-                (expLimit > (currentLevel + 1) * 10
-                  ? (currentLevel + 1) * 10
-                  : expLimit) !==
-                1
+              currentLevel >= 5 || calculateExp() < (currentLevel + 1) * 10
             }
             className="hover:bg-purple-600 hover:border-purple-600 hover:text-white disabled:text-gray-500 disabled:cursor-not-allowed disabled:border-gray-300 disabled:hover:bg-purple-600 disabled:hover:border-purple-600 disabled:hover:text-white outline-none font-bold text-lg px-6 py-2 rounded-3xl whitespace-nowrap"
           >
@@ -336,11 +324,7 @@ const Inventory = () => {
           <span>Lv{currentLevel}</span>
           <br />
           <span>
-            {exp > (currentLevel + 1) * 10 ? (currentLevel + 1) * 10 : exp}/
-            {expLimit > (currentLevel + 1) * 10
-              ? (currentLevel + 1) * 10
-              : expLimit}{" "}
-            EXP
+            {calculateExp()}/{(currentLevel + 1) * 10} EXP
           </span>
         </div>
         <button
@@ -349,12 +333,7 @@ const Inventory = () => {
           }}
           onClick={onLevelUp}
           disabled={
-            currentLevel >= 5 ||
-            (exp > (currentLevel + 1) * 10 ? (currentLevel + 1) * 10 : exp) /
-              (expLimit > (currentLevel + 1) * 10
-                ? (currentLevel + 1) * 10
-                : expLimit) !==
-              1
+            currentLevel >= 5 || calculateExp() < (currentLevel + 1) * 10
           }
           className="hover:bg-purple-600 hover:border-purple-600 hover:text-white disabled:text-gray-500 disabled:cursor-not-allowed disabled:border-gray-300 disabled:hover:bg-purple-600 disabled:hover:border-purple-600 disabled:hover:text-white outline-none font-bold text-lg px-6 py-2 rounded-3xl whitespace-nowrap"
         >
