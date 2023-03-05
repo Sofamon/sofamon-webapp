@@ -33,7 +33,9 @@ const SwipeableNFT = ({
   const tokenId: BigNumber = BigNumber.from(currentCharacterId.toString());
   const amount: BigNumber = BigNumber.from("1");
   const mintContract = async () => {
-    const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+    const provider = new ethers.providers.Web3Provider(
+      (window as any).ethereum
+    );
     const signer = provider.getSigner();
     const sofamon = new ethers.Contract(
       contractConfig.address,
@@ -125,18 +127,23 @@ const SwipeableNFT = ({
     });
   }, []);
 
-  var clickedOnce = false;
+  let popupCount = -1;
 
   document.onclick = function (event) {
     if (event === undefined) event = window.event as any;
     var target = "target" in event ? event.target : (event as any).srcElement;
     if (target.outerText === "Exchange") {
-      if (clickedOnce) {
-        return;
+      if (document.querySelectorAll("[id='popupBackground']").length == 1) {
+        return
       }
-      clickedOnce = true;
-      var popupBackground: any = document.getElementById("popupBackground");
-      popupBackground.remove();
+      if (popupCount == -1) {
+        popupCount = document.querySelectorAll("[id='popupBackground']").length;
+      }
+      let popupBackground: any;
+      for (let i = 0; i < popupCount - 1; i++) {
+        popupBackground = document.getElementById("popupBackground");
+        popupBackground.remove();
+      }
     }
 
     if (target.id == "popupBackground") {
