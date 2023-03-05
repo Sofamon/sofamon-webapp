@@ -49,8 +49,8 @@ const Inventory = () => {
     (async () => {
       
       const query = `{"query": "{ setLevels(where: {nftId: ${currentCharacterId}}, orderBy: level) { level } }" }`
-      const response = await fetch(`https://api.studio.thegraph.com/query/41437/sofamon/v0.0.1`, {
-        body: query,gi
+      const response = await fetch(`https://api.studio.thegraph.com/query/41437/sofamon-subgraph/v0.0.1`, {
+        body: query,
         headers: {
           "Content-Type": "application/json"
         },
