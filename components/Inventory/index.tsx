@@ -142,7 +142,7 @@ const Inventory = () => {
               className={"" + (!isAlreadyMinted && "grayscale")}
               width="300"
               height="300"
-              alt="Hikari NFT"
+              alt="Sofamon NFT"
             />
           ) : (
             <Image
@@ -150,7 +150,7 @@ const Inventory = () => {
               className={"" + (!isAlreadyMinted && "grayscale")}
               width="300"
               height="300"
-              alt="Hikari NFT"
+              alt="Sofamon NFT"
             />
           )}
           <div className="ml-3 bg-gray-100 rounded-3xl px-2 h-6 outline-none">
