@@ -5,9 +5,12 @@ import detectExtension from "../../libs/detectExtension";
 import { useAccount } from "wagmi";
 import Link from "next/link";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
+import { createClient } from 'urql'
+import { useFetchCharaterLevelsQuery } from "@/generated/graphql";
 
 const chromeExtensionId = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID as string;
 const etherscanAPIKey = process.env.ETHERSCAN_API_KEY as string;
+
 const Inventory = () => {
   const [isExtensionInstalled, setIsExtensionInstalled] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState("");
@@ -16,31 +19,44 @@ const Inventory = () => {
   const [exp, setExp] = useState(0);
   const [currentLevel, setCurrentLevel] = useState(0);
 
+  // const [result] = useFetchCharaterLevelsQuery();
+  // console.log("result:", result)
+  // const {data, fetching, error} = result;
+
+  // useEffect(() => {
+  //   console.log("In fetch level hook")
+  //   if (data) {
+  //     console.log("level: ", data.setLevels[0].level)
+  //     setCurrentLevel(data.setLevels[0].level)
+  //   }
+  // }, [data, fetching, error]);
+
   const { address, isConnected } = useAccount();
   if (!isConnected) window.location.assign("/");
 
   useEffect(() => {
     (async () => {
-      const response = await fetch(
-        `https://api-goerli.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=asc&apikey=${etherscanAPIKey}`
-      );
-      const res = await response.json();
-      if (res?.message !== "OK") return;
-      setExp(res.result.length);
-    })();
-  }, [address]);
+      
+      const query = `{"query": "{ setLevels(where: {nftId: ${currentCharacterId}}, orderBy: level) { level } }" }`
+      const response = await fetch(`https://api.studio.thegraph.com/query/41437/sofamon/v0.0.1`, {
+        body: query,
+        headers: {
+          "Content-Type": "application/json"
+        },
+        method: "POST"
+      });
 
-  useEffect(() => {
-    chrome.runtime.sendMessage(
-      chromeExtensionId,
-      {
-        info: "getLevelInfo",
-      },
-      (msg) => {
-        if (msg?.info === "levelInfo") setCurrentLevel(msg?.level);
-      }
-    );
-  }, [address]);
+      const res = await response.json();
+
+      console.log("level response: ", res)
+      
+      const allLevels = res.data.setLevels
+      const highestLevel = allLevels[(allLevels.length - 1)].level
+
+      console.log("level: ", highestLevel)
+      setCurrentLevel(highestLevel);
+    })();
+  }, []);
 
   useEffect(() => {
     setIsAlreadyMinted(false);
@@ -111,6 +127,16 @@ const Inventory = () => {
     if (selectedAsset === id) setSelectedAsset("");
     else setSelectedAsset(id);
   };
+
+  //TODO: handle fetching state
+
+  // if (fetching) {
+  //   return (
+  //     <span>
+  //       LOADING
+  //     </span>
+  //   )
+  // }
 
   return (
     <div className="flex inventory flex-col md:flex-row lg:flex-row xl:flex-row mx-10">
@@ -267,7 +293,8 @@ const Inventory = () => {
             ></div>
           </div>
           <div className="mr-12">
-            <span>Lv{currentLevel}</span>
+            {/* { fetching ? <span> Loading </span> : <span> Lv<>{data?.setLevels[0].level}</> </span> } */}
+            <span> Lv{currentLevel} </span>
             <br />
             <span>
               {calculateExp()}/{(currentLevel + 1) * 10} EXP

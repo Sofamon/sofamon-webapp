@@ -1,0 +1,7 @@
+query FetchCharaterLevels {
+    setLevels(first: 10) {
+        id
+        level
+        nftId
+    }
+}
