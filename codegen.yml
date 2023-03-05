@@ -1,0 +1,11 @@
+overwrite: true
+schema: "https://api.studio.thegraph.com/query/41437/sofamon/v0.0.1"
+documents: "graphql/**/*.graphql"
+generates:
+  generated/graphql.tsx:
+    # preset: "client"
+    # plugins: ["typescript", "typescript-operations", "typescript-urql"]
+    plugins:
+     - "typescript"
+     - "typescript-operations"
+     - "typescript-urql"
