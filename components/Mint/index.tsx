@@ -9,7 +9,6 @@ import {
   usePrepareContractWrite,
   useWaitForTransaction,
 } from "wagmi";
-import { abi } from "../../abi/contract-abi";
 import FlipCard, { BackCard, FrontCard } from "../Flipcard";
 import { BigNumber } from "ethers";
 import detectExtension from "../../libs/detectExtension";
@@ -17,11 +16,6 @@ import { useRouter } from "next/router";
 import { TriangleUpIcon, TriangleDownIcon } from "@chakra-ui/icons";
 
 const chromeExtensionId = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID as string;
-const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
-const contractConfig = {
-  address: contractAddress as `0x${string}`,
-  abi,
-};
 
 const SwipeableNFT = ({
   currentCharacterId,
@@ -37,11 +31,7 @@ const SwipeableNFT = ({
   const [mintError, setMintError] = useState<Error | null>(null);
 
   const { address } = useAccount();
-  const tokenId: BigNumber = BigNumber.from(
-    characters[
-      currentCharacterId > 0 ? currentCharacterId - 1 : 0
-    ].tokenId.toString()
-  );
+
   const amount: BigNumber = BigNumber.from("1");
 
   useEffect(() => {
@@ -66,10 +56,9 @@ const SwipeableNFT = ({
       for (let item of res?.assets) {
         if (
           String(item.contract).toLowerCase() ===
-            contractAddress?.toLowerCase() &&
-          parseInt(item.tokenId) ===
-            characters[currentCharacterId > 0 ? currentCharacterId - 1 : 0]
-              .tokenId
+          (currentCharacterId > 0
+            ? characters[currentCharacterId - 1].contract.toLowerCase()
+            : "")
         ) {
           setIsAlreadyMinted(true);
           break;
@@ -79,9 +68,11 @@ const SwipeableNFT = ({
   }, [address, currentCharacterId]);
 
   const { config: contractWriteConfig } = usePrepareContractWrite({
-    ...contractConfig,
+    address: characters[currentCharacterId > 0 ? currentCharacterId - 1 : 0]
+      .contract as `0x${string}`,
+    abi: characters[currentCharacterId > 0 ? currentCharacterId - 1 : 0].abi,
     functionName: "mint",
-    args: [tokenId, amount, address!],
+    args: [amount],
   });
 
   let {
@@ -222,13 +213,7 @@ const SwipeableNFT = ({
                       <Link
                         className="text-inherit underline hover:text-inherit"
                         target="_blank"
-                        href={`https://testnets.opensea.io/assets/goerli/${
-                          txData?.to
-                        }/${
-                          characters[
-                            currentCharacterId > 0 ? currentCharacterId - 1 : 0
-                          ].tokenId
-                        }`}
+                        href={`https://testnets.opensea.io/assets/goerli/${txData?.to}`}
                       >
                         Opensea
                       </Link>

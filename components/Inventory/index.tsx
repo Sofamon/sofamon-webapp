@@ -16,7 +16,6 @@ const Inventory = () => {
   const [exp, setExp] = useState(0);
   const [expLimit, setExpLimit] = useState(10);
   const [currentLevel, setCurrentLevel] = useState(0);
-  const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 
   const { address, isConnected } = useAccount();
   if (!isConnected) window.location.assign("/");
@@ -72,15 +71,16 @@ const Inventory = () => {
       for (let item of res?.assets) {
         if (
           String(item.contract).toLowerCase() ===
-            contractAddress?.toLowerCase() &&
-          parseInt(item.tokenId) === characters[currentCharacterId - 1].tokenId
+          characters[
+            currentCharacterId > 0 ? currentCharacterId - 1 : 0
+          ].contract.toLowerCase()
         ) {
           setIsAlreadyMinted(true);
           break;
         }
       }
     })();
-  }, [address, currentCharacterId, contractAddress]);
+  }, [address, currentCharacterId]);
 
   useEffect(() => {
     (async () => {
