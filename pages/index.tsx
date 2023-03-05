@@ -11,7 +11,6 @@ export default function Home() {
           <title>Sofamon</title>
         </Head>
         <Banner />
-        <Partners />
       </>
     </Layout>
   );

@@ -16,7 +16,7 @@ const Banner = () => {
   return (
     <>
       <div
-        className="mx-auto mt-10 mb-14 hidden md:flex lg:flex xl:flex"
+        className="mx-auto mt-20 mb-14 hidden md:flex lg:flex xl:flex"
         style={{ height: 582, width: 1200 }}
       >
         <div style={{ width: 453 }} className="my-auto">
