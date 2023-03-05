@@ -8,7 +8,6 @@ import { ChakraProvider } from "@chakra-ui/react";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import "../styles/globals.css";
-import { createClient as createUrqlClient, Provider as UrqlProvider} from "urql";
 
 const { chains, provider, webSocketProvider } = configureChains(
   [goerli],
@@ -23,9 +22,6 @@ const { connectors } = getDefaultWallets({
 const demoAppInfo = {
   appName: "Sofamon Webapp",
 };
-
-const url = 'https://api.studio.thegraph.com/query/41437/sofamon/v0.0.1';
-const urlqlClient = createUrqlClient({ url });
 
 const wagmiClient = createClient({
   autoConnect: true,
@@ -65,14 +61,12 @@ function MyApp({ Component, pageProps }: AppProps) {
         chains={chains}
         showRecentTransactions={true}
       >
-        <UrqlProvider value={urlqlClient}>
-          <ChakraProvider>
-            <Head>
-              <link rel="icon" type="image/png" href="/favicon.png" />
-            </Head>
-            <Component {...pageProps} />
-          </ChakraProvider>
-        </UrqlProvider>
+        <ChakraProvider>
+          <Head>
+            <link rel="icon" type="image/png" href="/favicon.png" />
+          </Head>
+          <Component {...pageProps} />
+        </ChakraProvider>
       </RainbowKitProvider>
     </WagmiConfig>
   );

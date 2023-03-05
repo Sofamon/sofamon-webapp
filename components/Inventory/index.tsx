@@ -13,12 +13,11 @@ import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 
 const chromeExtensionId = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID as string;
 const etherscanAPIKey = process.env.ETHERSCAN_API_KEY as string;
-
 const Inventory = () => {
   const [isExtensionInstalled, setIsExtensionInstalled] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState("");
   const [currentCharacterId, setCurrentCharacterId] = useState(1);
-  const [currentCharacterTokenId, setCurrentCharacterTokenId] = useState(0);
+  const [tokenId, setTokenId] = useState(1);
   const [isAlreadyMinted, setIsAlreadyMinted] = useState(false);
   const [exp, setExp] = useState(0);
   const [currentLevel, setCurrentLevel] = useState(0);
@@ -38,28 +37,16 @@ const Inventory = () => {
   }, [address]);
 
   useEffect(() => {
-    (async () => {
-      
-      const query = `{"query": "{ setLevels(where: {nftId: ${currentCharacterTokenId}}, orderBy: level) { level } }" }`
-      const response = await fetch(`https://api.studio.thegraph.com/query/41437/sofamon-subgraph/v0.0.1`, {
-        body: query,
-        headers: {
-          "Content-Type": "application/json"
-        },
-        method: "POST"
-      });
-
-      const res = await response.json();
-
-      console.log("level response: ", res)
-      
-      const allLevels = res.data.setLevels
-      const highestLevel = allLevels[(allLevels.length - 1)].level
-
-      console.log("level: ", highestLevel)
-      setCurrentLevel(highestLevel);
-    })();
-  }, [currentCharacterTokenId]);
+    chrome.runtime.sendMessage(
+      chromeExtensionId,
+      {
+        info: "getLevelInfo",
+      },
+      (msg) => {
+        if (msg?.info === "levelInfo") setCurrentLevel(msg?.level);
+      }
+    );
+  }, [address]);
 
   useEffect(() => {
     setIsAlreadyMinted(false);
@@ -88,12 +75,57 @@ const Inventory = () => {
           ].contract.toLowerCase()
         ) {
           setIsAlreadyMinted(true);
-          setCurrentCharacterTokenId(item.tokenId);
+          setTokenId(Number(item.tokenId));
+          const response = await fetch(
+            "https://api.studio.thegraph.com/query/41437/sofamon-subgraph/v0.0.1",
+            {
+              headers: {
+                "content-type": "application/json",
+              },
+              body: `{\"query\":\"query MyQuery {\\n  setLevels(first: 10, where: {nftId: \\\"${String(
+                item.tokenId
+              )}\\\"}, orderBy: nftId, orderDirection: asc) {\\n    level\\n  }\\n}\",\"variables\":null,\"operationName\":\"MyQuery\",\"extensions\":{\"headers\":null}}`,
+              method: "POST",
+            }
+          );
+          const res = await response.json();
+          if (
+            res &&
+            res?.data &&
+            res.data?.setLevels &&
+            res.data.setLevels?.length > 0
+          ) {
+            setCurrentLevel(res.data.setLevels[0].level);
+          }
           break;
         }
       }
     })();
   }, [address, currentCharacterId]);
+
+  const { config: contractWriteConfig } = usePrepareContractWrite({
+    address: characters[currentCharacterId > 0 ? currentCharacterId - 1 : 0]
+      .contract as `0x${string}`,
+    abi: characters[currentCharacterId > 0 ? currentCharacterId - 1 : 0].abi,
+    functionName: "setLevelOf",
+    args: [tokenId, currentLevel + 1],
+  });
+
+  let {
+    data: levelData,
+    write: setLevelOf,
+    isLoading: isLevelUpLoading,
+    isSuccess: isLevelUpStarted,
+    error: _mintErrorRaw,
+  } = useContractWrite(contractWriteConfig);
+
+  let {
+    data: _txData,
+    isSuccess: txSuccess,
+    error: _txErrorRaw,
+  } = useWaitForTransaction({
+    hash: levelData?.hash,
+  });
 
   useEffect(() => {
     (async () => {
@@ -114,32 +146,11 @@ const Inventory = () => {
     setCurrentLevel(0);
   };
 
-  const { config: contractWriteConfig } = usePrepareContractWrite({
-    address: characters[currentCharacterId > 0 ? currentCharacterId - 1 : 0]
-      .contract as `0x${string}`,
-    abi: characters[currentCharacterId > 0 ? currentCharacterId - 1 : 0].abi,
-    functionName: "setLevelOf",
-    args: [currentCharacterTokenId, currentLevel + 1],
-  });
-
-  let {
-    data: levelData,
-    write: setLevelOf,
-    isLoading: isLevelUpLoading,
-    isSuccess: isLevelUpStarted,
-    error: mintErrorRaw,
-  } = useContractWrite(contractWriteConfig);
-
-  let {
-    data: txData,
-    isSuccess: txSuccess,
-    error: txErrorRaw,
-  } = useWaitForTransaction({
-    hash: levelData?.hash,
-  });
+  useEffect(() => {
+    if (txSuccess) onLevelUp();
+  }, [txSuccess]);
 
   const onLevelUp = () => {
-    setLevelOf?.();
     chrome.runtime.sendMessage(chromeExtensionId, {
       info: "levelUp",
     });
@@ -156,8 +167,6 @@ const Inventory = () => {
     if (selectedAsset === id) setSelectedAsset("");
     else setSelectedAsset(id);
   };
-
-  //TODO: handle fetching state
 
   return (
     <div className="flex inventory flex-col md:flex-row lg:flex-row xl:flex-row mx-10">
@@ -189,7 +198,7 @@ const Inventory = () => {
               className={"" + (!isAlreadyMinted && "grayscale")}
               width="300"
               height="300"
-              alt="Sofamon NFT"
+              alt="Hikari NFT"
             />
           ) : (
             <Image
@@ -197,7 +206,7 @@ const Inventory = () => {
               className={"" + (!isAlreadyMinted && "grayscale")}
               width="300"
               height="300"
-              alt="Sofamon NFT"
+              alt="Hikari NFT"
             />
           )}
           <div className="ml-3 bg-gray-100 rounded-3xl px-2 h-6 outline-none">
@@ -270,7 +279,10 @@ const Inventory = () => {
         </div>
       </div>
       <div className="hidden md:block lg:block xl:block">
-        <div className="pl-28 h-min grid relative -top-6 grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-16">
+        <div
+          className="pl-28 h-min grid relative -top-6 grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-16"
+          style={{ maxWidth: 714 }}
+        >
           {characters[currentCharacterId - 1].assets.map((id, i) => (
             <div
               key={i}
@@ -309,13 +321,19 @@ const Inventory = () => {
                     (calculateExp() > (currentLevel + 1) * 10
                       ? (currentLevel + 1) * 10
                       : calculateExp())) /
-                  ((currentLevel + 1) * 10),
+                    ((currentLevel + 1) * 10) <
+                  0
+                    ? 0
+                    : (256 *
+                        (calculateExp() > (currentLevel + 1) * 10
+                          ? (currentLevel + 1) * 10
+                          : calculateExp())) /
+                      ((currentLevel + 1) * 10),
               }}
             ></div>
           </div>
           <div className="mr-12">
-            {/* { fetching ? <span> Loading </span> : <span> Lv<>{data?.setLevels[0].level}</> </span> } */}
-            <span> Lv{currentLevel} </span>
+            <span>Lv{currentLevel}</span>
             <br />
             <span>
               {calculateExp()}/{(currentLevel + 1) * 10} EXP
@@ -325,13 +343,19 @@ const Inventory = () => {
             style={{
               borderWidth: "0.16rem",
             }}
-            onClick={onLevelUp}
+            onClick={() => setLevelOf?.()}
             disabled={
-              currentLevel >= 5 || calculateExp() < (currentLevel + 1) * 10
+              currentLevel >= 5 ||
+              calculateExp() < (currentLevel + 1) * 10 ||
+              (isLevelUpLoading && !txSuccess) ||
+              (isLevelUpStarted && !txSuccess)
             }
             className="hover:bg-purple-600 hover:border-purple-600 hover:text-white disabled:text-gray-500 disabled:cursor-not-allowed disabled:border-gray-300 disabled:hover:bg-purple-600 disabled:hover:border-purple-600 disabled:hover:text-white outline-none font-bold text-lg px-6 py-2 rounded-3xl whitespace-nowrap"
           >
-            Level up
+            {isLevelUpLoading && !txSuccess && "Waiting for approval"}
+            {isLevelUpStarted && !txSuccess && "Leveling up..."}
+            {((!isLevelUpLoading && !isLevelUpStarted) || txSuccess) &&
+              "Level up"}
           </button>
         </div>
       </div>
