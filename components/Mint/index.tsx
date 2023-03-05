@@ -52,12 +52,37 @@ const SwipeableNFT = ({
   useEffect(() => {
     window.Cypher({
       address: address,
-      targetChainIdHex: '0x5', // Eth - Goreli
+      targetChainIdHex: "0x5", // Eth - Goreli
       requiredTokenBalance: 0,
       isTestnet: true,
-      callBack: () => { window.close(); }
+      callBack: () => {
+        console.log("callBack called");
+      },
     });
-  }, [])
+  }, []);
+
+  var clickedOnce = false;
+
+  document.onclick = function (event) {
+    if (event === undefined) event = window.event as any;
+    var target = "target" in event ? event.target : (event as any).srcElement;
+    if (target.outerText === "Exchange") {
+      if (clickedOnce) {
+        return;
+      }
+      clickedOnce = true;
+      var popupBackground: any = document.getElementById("popupBackground");
+      popupBackground.remove();
+    }
+
+    if (target.id == "popupBackground") {
+      var popupBackground: any = document.getElementById("popupBackground");
+      while (popupBackground) {
+        popupBackground.remove();
+        popupBackground = document.getElementById("popupBackground");
+      }
+    }
+  };
 
   let updateInterval: any;
   useEffect(() => {
@@ -155,7 +180,7 @@ const SwipeableNFT = ({
             ? characters[currentCharacterId - 1].contract.toLowerCase()
             : "")
         ) {
-          // setIsAlreadyMinted(true);
+          setIsAlreadyMinted(true);
           break;
         }
       }

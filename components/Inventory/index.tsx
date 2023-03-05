@@ -74,7 +74,7 @@ const Inventory = () => {
             currentCharacterId > 0 ? currentCharacterId - 1 : 0
           ].contract.toLowerCase()
         ) {
-          // setIsAlreadyMinted(true);
+          setIsAlreadyMinted(true);
           break;
         }
       }
