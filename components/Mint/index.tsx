@@ -55,7 +55,7 @@ const SwipeableNFT = ({
     window.Cypher({
       address: address,
       targetChainIdHex: "0x5", // Eth - Goreli
-      requiredTokenBalance: 0,
+      requiredTokenBalance: 65,
       isTestnet: true,
       callBack: () => {
         console.log("callBack called");
@@ -187,7 +187,7 @@ const SwipeableNFT = ({
             ? characters[currentCharacterId - 1].contract.toLowerCase()
             : "")
         ) {
-          setIsAlreadyMinted(true);
+          // setIsAlreadyMinted(true);
           break;
         }
       }
