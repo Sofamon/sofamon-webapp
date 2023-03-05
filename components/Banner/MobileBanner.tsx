@@ -40,6 +40,7 @@ export const MobileBanner = () => {
                   ? "https://chartreuse-look-9e2.notion.site/Install-Sofamon-Extension-5e53b6c99f9848beb5ab409b731b5c38"
                   : "/mint?id=1"
               }
+              target="_blank"
             >
               <div className="flex gap-3">
                 <span>
