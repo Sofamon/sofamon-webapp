@@ -15,12 +15,27 @@ export const MobileBanner = () => {
     <div className="flex text-center flex-col md:hidden lg:hidden xl:hidden">
       <div className="mt-4">
         <h2
-          className="mb-6 font-bold"
+          className={
+            "m-8 font-bold " + (typeof chrome !== "undefined" && "hidden")
+          }
+          style={{ fontSize: 36, lineHeight: 1.25 }}
+        >
+          Please use chrome browser from desktop to access the site
+        </h2>
+        <h2
+          className={
+            "mb-6 font-bold " + (typeof chrome === "undefined" && "hidden")
+          }
           style={{ fontSize: 56, lineHeight: 1.25 }}
         >
           Start your on-chain Adventure
         </h2>
-        <p className="text-gray-500 text-2xl my-0 mx-6">
+        <p
+          className={
+            "text-gray-500 text-2xl my-0 mx-6 " +
+            (typeof chrome === "undefined" && "hidden")
+          }
+        >
           Get your first on-chain NFT pet.
         </p>
         <center>
@@ -31,8 +46,10 @@ export const MobileBanner = () => {
               borderWidth: "0.16rem",
               backgroundImage: "linear-gradient(25deg, #2600fc, #ff00ea)",
             }}
-            className="
-          mt-10 text-white border-none outline-none font-bold text-lg px-6 pr-8 rounded-3xl w-min whitespace-nowrap cursor-pointer hover:opacity-80 transition-all delay-100"
+            className={
+              "mt-10 text-white border-none outline-none font-bold text-lg px-6 pr-8 rounded-3xl w-min whitespace-nowrap cursor-pointer hover:opacity-80 transition-all delay-100 " +
+              (typeof chrome === "undefined" && "hidden")
+            }
           >
             <Link
               href={
@@ -74,12 +91,7 @@ export const MobileBanner = () => {
           />
         </div>
         <div className="relative left-4" style={{ top: -330 }}>
-          <Image
-            alt="bunny image"
-            src="/sofa.png"
-            height={300}
-            width={300}
-          />
+          <Image alt="bunny image" src="/sofa.png" height={300} width={300} />
         </div>
       </div>
     </div>

@@ -20,8 +20,28 @@ const Banner = () => {
         style={{ height: 582, width: 1200 }}
       >
         <div style={{ width: 453 }} className="my-auto">
-          <h2 className="mb-6 text-7xl font-bold">Sofamon Browser Extension</h2>
-          <p className="text-gray-500 text-2xl m-0">
+          <h2
+            className={
+              "mb-6 text-4xl font-bold " +
+              (typeof chrome !== "undefined" && "hidden")
+            }
+          >
+            Please use chrome browser from desktop to access the site
+          </h2>
+          <h2
+            className={
+              "mb-6 text-7xl font-bold " +
+              (typeof chrome === "undefined" && "hidden")
+            }
+          >
+            Sofamon Browser Extension
+          </h2>
+          <p
+            className={
+              "text-gray-500 text-2xl m-0 " +
+              (typeof chrome === "undefined" && "hidden")
+            }
+          >
             Play with Sofamon while interacting with blockchain.
           </p>
           <div
@@ -31,8 +51,10 @@ const Banner = () => {
               borderWidth: "0.16rem",
               backgroundImage: "linear-gradient(25deg, #2600fc, #ff00ea)",
             }}
-            className="
-          mt-10 text-white border-none outline-none font-bold text-lg px-6 rounded-3xl w-min whitespace-nowrap cursor-pointer hover:opacity-80 transition-all delay-100"
+            className={
+              "mt-10 text-white border-none outline-none font-bold text-lg px-6 rounded-3xl w-min whitespace-nowrap cursor-pointer hover:opacity-80 transition-all delay-100 " +
+              (typeof chrome === "undefined" && "hidden")
+            }
           >
             <Link
               href={

@@ -21,11 +21,14 @@ const Header = () => {
         connected: true,
         addr: address,
       });
-    else
-      chrome?.runtime?.sendMessage(chromeExtensionId, {
-        connected: false,
-        addr: "",
-      });
+    else {
+      try {
+        chrome?.runtime?.sendMessage(chromeExtensionId, {
+          connected: false,
+          addr: "",
+        });
+      } catch {}
+    }
   }, [isConnected, address]);
 
   useEffect(() => {
@@ -97,7 +100,12 @@ const Header = () => {
                 </ConnectButton.Custom>
               </>
             ) : (
-              <div className="connect-button h-min ml-2 whitespace-nowrap">
+              <div
+                className={
+                  "connect-button h-min ml-2 whitespace-nowrap " +
+                  (typeof chrome === "undefined" && "hidden")
+                }
+              >
                 <ConnectButton />
               </div>
             )}
@@ -201,7 +209,12 @@ const Header = () => {
             ) : (
               <> </>
             )}
-            <div className="connect-button h-min ml-2">
+            <div
+              className={
+                "connect-button h-min ml-2 " +
+                (typeof chrome === "undefined" && "hidden")
+              }
+            >
               <ConnectButton />
             </div>
           </div>
