@@ -13,6 +13,7 @@ const Inventory = () => {
   const [selectedAsset, setSelectedAsset] = useState("");
   const [currentCharacterId, setCurrentCharacterId] = useState(1);
   const [isAlreadyMinted, setIsAlreadyMinted] = useState(false);
+  const [activatedId, setActivatedId] = useState(0);
   const [exp, setExp] = useState(0);
   const [currentLevel, setCurrentLevel] = useState(0);
 
@@ -92,6 +93,7 @@ const Inventory = () => {
           : selectedAsset,
     });
     setCurrentLevel(0);
+    setActivatedId(currentCharacterId);
   };
 
   const onLevelUp = () => {
@@ -217,7 +219,7 @@ const Inventory = () => {
               className="mt-3 hover:bg-purple-600 hover:border-purple-600 hover:text-white disabled:text-gray-500 disabled:cursor-not-allowed disabled:border-gray-300 disabled:hover:bg-purple-600 disabled:hover:border-purple-600 disabled:hover:text-white outline-none font-bold text-lg px-6 py-2 rounded-3xl"
               onClick={getCharacter}
             >
-              Activate
+              { activatedId === currentCharacterId ? "Activated" : "Activate" }
             </button>
           )}
         </div>
