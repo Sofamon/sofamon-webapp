@@ -36,12 +36,12 @@
     "birthOfNFT": {
       "id": "05",
       "loop": 1,
-      "delay": 125,
+      "delay": 80,
       "frames": 19
     },
     "sendTransaction": {
       "id": "06",
-      "loop": 1,
+      "loop": 3,
       "delay": 125,
       "frames": 13
     },
@@ -53,7 +53,7 @@
     },
     "getAirdrop": {
       "id": "08",
-      "loop": 1,
+      "loop": 3,
       "delay": 125,
       "frames": 8
     },
@@ -66,7 +66,7 @@
     "checkPrice": {
       "id": "10",
       "final": "16",
-      "delay": 175,
+      "delay": 150,
       "frames": 16
     },
     "jumpOnto": {
