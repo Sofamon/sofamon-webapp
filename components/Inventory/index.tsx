@@ -11,6 +11,7 @@ const etherscanAPIKey = process.env.ETHERSCAN_API_KEY as string;
 const Inventory = () => {
   const [isExtensionInstalled, setIsExtensionInstalled] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState("");
+  const [activateEnable, setActivateEnable] = useState(true);
   const [currentCharacterId, setCurrentCharacterId] = useState(1);
   const [isAlreadyMinted, setIsAlreadyMinted] = useState(false);
   const [activatedId, setActivatedId] = useState(0);
@@ -94,6 +95,7 @@ const Inventory = () => {
     });
     setCurrentLevel(0);
     setActivatedId(currentCharacterId);
+    setActivateEnable(false);
   };
 
   const onLevelUp = () => {
@@ -110,8 +112,10 @@ const Inventory = () => {
   };
 
   const handleSelectAsset = (id: string) => {
-    if (selectedAsset === id) setSelectedAsset("");
-    else setSelectedAsset(id);
+    setActivateEnable(true);
+    if (selectedAsset === id) {
+      setSelectedAsset("");
+    } else setSelectedAsset(id);
   };
 
   return (
@@ -203,7 +207,9 @@ const Inventory = () => {
               className="mt-3 hover:bg-purple-600 hover:border-purple-600 hover:text-white disabled:text-gray-500 disabled:cursor-not-allowed disabled:border-gray-300 disabled:hover:bg-purple-600 disabled:hover:border-purple-600 disabled:hover:text-white outline-none font-bold text-lg px-6 py-2 rounded-3xl whitespace-nowrap"
             >
               <Link
-                href={"https://chartreuse-look-9e2.notion.site/Install-Sofamon-Extension-5e53b6c99f9848beb5ab409b731b5c38"}
+                href={
+                  "https://chartreuse-look-9e2.notion.site/Install-Sofamon-Extension-5e53b6c99f9848beb5ab409b731b5c38"
+                }
                 target="_blank"
                 rel="noreferrer"
               >
@@ -219,7 +225,9 @@ const Inventory = () => {
               className="mt-3 hover:bg-purple-600 hover:border-purple-600 hover:text-white disabled:text-gray-500 disabled:cursor-not-allowed disabled:border-gray-300 disabled:hover:bg-purple-600 disabled:hover:border-purple-600 disabled:hover:text-white outline-none font-bold text-lg px-6 py-2 rounded-3xl"
               onClick={getCharacter}
             >
-              { activatedId === currentCharacterId ? "Activated" : "Activate" }
+              {activatedId === currentCharacterId && !activateEnable
+                ? "Activated"
+                : "Activate"}
             </button>
           )}
         </div>
